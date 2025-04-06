@@ -38,4 +38,31 @@ class EventViewModel(private val eventDao: EventDao) : ViewModel() {
             eventDao.update(event)
         }
     }
+
+    fun updateEvent(event: Event) {
+        viewModelScope.launch {
+            try {
+                _isLoading.value = true
+                eventDao.upsertNote(event)
+            } catch (e: Exception) {
+                _error.value = "Failed to update event: ${e.message}"
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    fun deleteEvent(event: Event) {
+        viewModelScope.launch {
+            try {
+                _isLoading.value = true
+                eventDao.deleteNote(event)
+            } catch (e: Exception) {
+                _error.value = "Failed to delete event: ${e.message}"
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
 }

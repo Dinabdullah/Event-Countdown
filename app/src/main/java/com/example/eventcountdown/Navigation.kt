@@ -36,5 +36,12 @@ fun EventNavigation(viewModel: EventViewModel) {
                 )
             }
         }
+        composable("updateEvent/{eventId}") { backStackEntry ->
+            val eventId = backStackEntry.arguments?.getString("eventId")?.toIntOrNull()
+            if (eventId != null) {
+                UpdateEventScreen(eventId = eventId, navController = navController, viewModel = eventViewModel)
+            }
+        }
     }
+
 }

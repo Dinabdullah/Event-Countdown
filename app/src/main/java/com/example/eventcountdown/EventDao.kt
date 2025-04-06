@@ -1,6 +1,10 @@
 package com.example.eventcountdown
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.Query
+import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -11,9 +15,9 @@ interface EventDao {
     @Query("SELECT * FROM events ORDER BY date ASC")
     fun getAllEvents(): Flow<List<Event>>
 
-    @Delete
-    suspend fun delete(event: Event)
+    @Upsert
+    suspend fun upsertNote(event:Event)
 
-    @Update
-    suspend fun update(event: Event)
+    @Delete
+    suspend fun  deleteNote(event:Event)
 }
