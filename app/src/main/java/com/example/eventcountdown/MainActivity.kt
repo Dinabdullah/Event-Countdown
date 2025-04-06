@@ -23,8 +23,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             EventCountdownTheme {
                 Surface(
-                    color = MaterialTheme.colorScheme.background,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
                 ) {
                     EventNavigation(EventViewModel(db.eventDao()))
                 }

@@ -6,22 +6,23 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.example.eventcountdown.Event
-import com.example.eventcountdown.EventViewModel
 import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddEventScreen(navController: NavController, viewModel: EventViewModel) {
-    var title by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
-    var selectedDate by remember { mutableStateOf<Date?>(null) }
+fun EditEventScreen(
+    event: Event,
+    onUpdate: (Event) -> Unit,
+    onBack: () -> Unit
+) {
+    var title by remember { mutableStateOf(event.title) }
+    var description by remember { mutableStateOf(event.description) }
+    var selectedDate by remember { mutableStateOf(event.date) }
     val context = LocalContext.current
-    val calendar = remember { Calendar.getInstance() }
+    val calendar = remember { Calendar.getInstance().apply { time = event.date } }
 
     val datePicker = DatePickerDialog(
         context,
@@ -45,9 +46,9 @@ fun AddEventScreen(navController: NavController, viewModel: EventViewModel) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Add New Event") },
+                title = { Text("Edit Event") },
                 navigationIcon = {
-                    TextButton(onClick = { navController.popBackStack() }) {
+                    TextButton(onClick = onBack) {
                         Text("Back")
                     }
                 }
@@ -80,29 +81,25 @@ fun AddEventScreen(navController: NavController, viewModel: EventViewModel) {
                 onClick = { datePicker.show() },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Select Date & Time")
+                Text("Change Date & Time")
             }
 
-            Text("Selected: ${selectedDate?.toString() ?: "Not selected"}")
+            Text("Selected: ${selectedDate.toString()}")
 
             Button(
                 onClick = {
-                    selectedDate?.let {
-                        viewModel.addEvent(
-                            Event(
-                                title = title,
-                                description = description,
-                                date = it,
-                                color = Color.Blue.toString()
-                            )
+                    onUpdate(
+                        event.copy(
+                            title = title,
+                            description = description,
+                            date = selectedDate
                         )
-                        navController.popBackStack()
-                    }
+                    )
                 },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = title.isNotBlank() && selectedDate != null
+                enabled = title.isNotBlank()
             ) {
-                Text("Save Event")
+                Text("Update Event")
             }
         }
     }

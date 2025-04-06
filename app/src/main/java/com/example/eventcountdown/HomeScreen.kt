@@ -1,19 +1,17 @@
-package com.example.eventcountdown
+package com.example.eventcountdown.ui
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.eventcountdown.Event
+import com.example.eventcountdown.EventViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -24,13 +22,9 @@ fun HomeScreen(navController: NavController, viewModel: EventViewModel) {
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { navController.navigate("addEvent") },
-                containerColor = Color.Blue,
-                contentColor = Color.White
+                containerColor = MaterialTheme.colorScheme.primary
             ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Add Event"
-                )
+                Text("+", style = MaterialTheme.typography.titleLarge)
             }
         }
     ) { padding ->
@@ -41,21 +35,22 @@ fun HomeScreen(navController: NavController, viewModel: EventViewModel) {
                     .padding(padding),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = "No events yet",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.titleLarge
-                )
+                Text("No events yet", style = MaterialTheme.typography.titleLarge)
             }
         } else {
-            Column(
+            LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
+                    .padding(horizontal = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                events.forEach { event ->
-                    EventItem(event = event)
+                items(events) { event ->
+                    EventItem(
+                        event = event,
+                        onEditClick = { navController.navigate("editEvent/${event.id}") },
+                        onDeleteClick = { viewModel.deleteEvent(event) }
+                    )
                 }
             }
         }
@@ -63,29 +58,69 @@ fun HomeScreen(navController: NavController, viewModel: EventViewModel) {
 }
 
 @Composable
-fun EventItem(event: Event) {
+fun EventItem(
+    event: Event,
+    onEditClick: () -> Unit,
+    onDeleteClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(8.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth()
         ) {
             Text(
                 text = event.title,
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.titleMedium
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
             Text(
                 text = event.description,
                 style = MaterialTheme.typography.bodyMedium
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
             Text(
                 text = event.date.toString(),
                 style = MaterialTheme.typography.bodySmall
             )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                horizontalArrangement = Arrangement.End,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                TextButton(
+                    onClick = onEditClick,
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = MaterialTheme.colorScheme.primary
+                    )
+                ) {
+                    Text("Update")
+                }
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                TextButton(
+                    onClick = onDeleteClick,
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
+                    Text("Delete")
+                }
+            }
         }
     }
 }
