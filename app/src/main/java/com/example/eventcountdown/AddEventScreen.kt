@@ -29,7 +29,7 @@ fun AddEventScreen(navController: NavController, viewModel: EventViewModel) {
             TimePickerDialog(
                 context,
                 { _, h, min ->
-                    calendar.set(y, m, d, h, min)
+                    calendar.set(y, m, d, h, min,0)
                     selectedDate = calendar.time
                 },
                 calendar.get(Calendar.HOUR_OF_DAY),

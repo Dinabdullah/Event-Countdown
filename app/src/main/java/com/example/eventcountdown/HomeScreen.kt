@@ -14,6 +14,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.compose.foundation.clickable
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+
 
 @Composable
 fun HomeScreen(navController: NavController, viewModel: EventViewModel) {
@@ -61,6 +66,9 @@ fun HomeScreen(navController: NavController, viewModel: EventViewModel) {
                         },
                         onDelete = { eventToDelete ->
                             viewModel.deleteEvent(eventToDelete)
+                        },
+                        onClick   = {
+                            navController.navigate("countdownEvent/${it.id}")
                         }
                     )
                 }
@@ -73,7 +81,8 @@ fun HomeScreen(navController: NavController, viewModel: EventViewModel) {
 fun EventItem(
     event: Event,
     onUpdate: (Event) -> Unit,
-    onDelete: (Event) -> Unit
+    onDelete: (Event) -> Unit,
+    onClick: (Event) -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -82,22 +91,28 @@ fun EventItem(
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(
-            modifier = Modifier
-                .padding(16.dp)
+            modifier = Modifier.padding(16.dp)
         ) {
-            Text(
-                text = event.title,
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.titleMedium
-            )
-            Text(
-                text = event.description,
-                style = MaterialTheme.typography.bodyMedium
-            )
-            Text(
-                text = event.date.toString(),
-                style = MaterialTheme.typography.bodySmall
-            )
+            // Make only this part clickable for the countdown view
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onClick(event) }
+            ) {
+                Text(
+                    text = event.title,
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Text(
+                    text = event.description,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Text(
+                    text = formatDateForDisplay(event.date),
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
 
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -118,4 +133,9 @@ fun EventItem(
             }
         }
     }
+}
+
+fun formatDateForDisplay(date: Date): String {
+    val dateFormat = SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault())
+    return dateFormat.format(date)
 }
