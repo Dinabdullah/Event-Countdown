@@ -52,5 +52,15 @@ fun EventNavigation(eventViewModel: EventViewModel) {
                 )
             }
         }
+        composable("countdownEvent/{eventId}") { backStackEntry ->
+            val eventId = backStackEntry.arguments?.getString("eventId")?.toIntOrNull()
+            if (eventId != null) {
+                CountdownScreen(
+                    eventId = eventId,
+                    navController = navController,
+                    viewModel = eventViewModel
+                )
+            }
+        }
     }
 }
