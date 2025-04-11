@@ -3,6 +3,7 @@ package com.example.eventcountdown.onBoarding
 import android.content.Context
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -18,6 +19,7 @@ import kotlinx.coroutines.launch
 fun OnboardingPager(navController: NavController, context: Context, onFinish: () -> Unit) {
     val pagerState = rememberPagerState()
     val scope = rememberCoroutineScope()
+    val preferencesHelper = remember { PreferencesHelper(context) }
     val onboardingPages = listOf(
         OnboardingPageData(
             image = R.drawable.onboarding_image1,
@@ -47,13 +49,13 @@ fun OnboardingPager(navController: NavController, context: Context, onFinish: ()
                     if (pagerState.currentPage < onboardingPages.size - 1) {
                         pagerState.animateScrollToPage(pagerState.currentPage + 1)
                     } else {
-                        setOnboardingCompleted(context)
+                        preferencesHelper.isOnboardingComplete = true
                         onFinish()
                     }
                 }
             },
             onSkipClick = {
-                setOnboardingCompleted(context)
+                preferencesHelper.isOnboardingComplete = true
                 onFinish()
             }
         )

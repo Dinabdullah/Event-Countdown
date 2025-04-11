@@ -4,10 +4,14 @@ import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.eventcountdown.onBoarding.OnboardingPager
+import com.example.eventcountdown.onBoarding.PreferencesHelper
 import com.example.eventcountdown.ui.AddEventScreen
 
 @Composable
@@ -23,8 +27,19 @@ fun EventNavigation(eventViewModel: EventViewModel) {
 
     NavHost(
         navController = navController,
-        startDestination = startDestination
+        startDestination = "splash"
     ) {
+
+        composable("splash") {
+            val viewModel: SplashViewModel = viewModel(
+                factory = object : ViewModelProvider.Factory {
+                    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                        return SplashViewModel(PreferencesHelper(context)) as T
+                    }
+                }
+            )
+            SplashScreen(viewModel = viewModel, navController = navController)
+        }
         composable("onboarding") {
             OnboardingPager(
                 navController = navController,
