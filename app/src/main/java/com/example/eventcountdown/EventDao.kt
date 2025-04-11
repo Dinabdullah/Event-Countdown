@@ -16,8 +16,8 @@ interface EventDao {
     fun getAllEvents(): Flow<List<Event>>
 
     @Upsert
-    suspend fun upsertNote(event:Event)
+    suspend fun upsertEvent(event: Event)
 
     @Delete
-    suspend fun  deleteNote(event:Event)
+    suspend fun deleteEvent(event: Event)
 }

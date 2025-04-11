@@ -12,6 +12,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.eventcountdown.onBoarding.OnboardingPager
 import com.example.eventcountdown.onBoarding.PreferencesHelper
+import com.example.eventcountdown.splash.SplashScreen
+import com.example.eventcountdown.splash.SplashViewModel
 import com.example.eventcountdown.ui.AddEventScreen
 
 @Composable

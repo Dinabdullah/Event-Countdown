@@ -1,4 +1,4 @@
-package com.example.eventcountdown
+package com.example.eventcountdown.splash
 
 import android.content.Context
 import androidx.compose.runtime.remember

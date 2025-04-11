@@ -1,4 +1,4 @@
-package com.example.eventcountdown
+package com.example.eventcountdown.splash
 
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -33,6 +33,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.eventcountdown.R
 import kotlinx.coroutines.delay
 
 @Composable

@@ -1,5 +1,8 @@
 package com.example.eventcountdown
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -118,30 +121,44 @@ fun CountdownDisplay(duration: TimeRemaining) {
 
 @Composable
 fun CountdownUnit(value: Long, unit: String) {
+    val maxValue = when (unit) {
+        "HOURS" -> 24f
+        "MINUTES", "SECONDS" -> 60f
+        else -> 1f  // For days, we'll use a full circle
+    }
+    val progress = value.toFloat() / maxValue
+
+    val animatedProgress by animateFloatAsState(
+        targetValue = progress,
+        animationSpec = tween(durationMillis = 500, easing = LinearEasing)
+    )
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Card(
-            modifier = Modifier.size(70.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer
-            )
+        Box(
+            modifier = Modifier.size(90.dp),
+            contentAlignment = Alignment.Center
         ) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = value.toString(),
-                    fontSize = 26.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
+            CircularProgressIndicator(
+                progress = animatedProgress,
+                modifier = Modifier.size(90.dp),
+                strokeWidth = 8.dp,
+                color = MaterialTheme.colorScheme.primary,
+                trackColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+            )
+            Text(
+                text = value.toString(),
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
         }
+        Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = unit,
             fontSize = 12.sp,
-            modifier = Modifier.padding(top = 4.dp)
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
         )
     }
 }

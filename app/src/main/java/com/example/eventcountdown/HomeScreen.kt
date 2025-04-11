@@ -15,6 +15,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -53,12 +60,13 @@ fun HomeScreen(navController: NavController, viewModel: EventViewModel) {
                 )
             }
         } else {
-            Column(
+            LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(padding)
+                    .padding(padding),
+                contentPadding = PaddingValues(horizontal = 8.dp)
             ) {
-                events.forEach { event ->
+                items(events){ event ->
                     EventItem(
                         event = event,
                         onUpdate = {
@@ -84,57 +92,108 @@ fun EventItem(
     onDelete: (Event) -> Unit,
     onClick: (Event) -> Unit
 ) {
+    var currentTime by remember { mutableStateOf(System.currentTimeMillis()) }
+    val eventTime = event.date.time
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(1000)
+            currentTime = System.currentTimeMillis()
+        }
+    }
+
+    val diffMillis = eventTime - currentTime
+    val totalSeconds = (diffMillis / 1000).coerceAtLeast(0)
+
+    // Proper time calculations
+    val days = totalSeconds / 86400
+    val hours = (totalSeconds % 86400) / 3600
+    val minutes = (totalSeconds % 3600) / 60
+    val seconds = totalSeconds % 60
+
+    // Calculate progress using precise values
+    val progress = when {
+        diffMillis <= 0 -> 1f
+        days > 7 -> 0.75f
+        days > 3 -> 0.5f
+        days > 0 -> 0.25f
+        else -> {
+            val preciseHours = totalSeconds / 3600f
+            1 - (preciseHours / 24f)
+        }
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            // Make only this part clickable for the countdown view
-            Column(
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { onClick(event) }
+                    .clickable { onClick(event) },
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = event.title,
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Text(
-                    text = event.description,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Text(
-                    text = formatDateForDisplay(event.date),
-                    style = MaterialTheme.typography.bodySmall
-                )
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = event.title,
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Text(
+                        text = event.description,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Text(
+                        text = formatDateForDisplay(event.date),
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+
+                Box(
+                    modifier = Modifier.size(60.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(
+                        progress = progress,
+                        modifier = Modifier.size(60.dp),
+                        strokeWidth = 4.dp,
+                        color = when {
+                            diffMillis <= 0 -> MaterialTheme.colorScheme.error
+                            days < 1 -> MaterialTheme.colorScheme.primary
+                            else -> MaterialTheme.colorScheme.secondary
+                        }
+                    )
+                    Text(
+                        text = when {
+                            diffMillis <= 0 -> "🎉"
+                            days > 0 -> "${days}d"
+                            hours > 0 -> "${hours}h"
+                            minutes > 0 -> "${minutes}m"
+                            else -> "${seconds}s"
+                        },
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(8.dp))
 
             Row {
-                Button(
-                    onClick = { onUpdate(event) },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1976D2))
-                ) {
+                Button(onClick = { onUpdate(event) }) {
                     Text("Update")
                 }
                 Spacer(modifier = Modifier.width(8.dp))
-                Button(
-                    onClick = { onDelete(event) },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
-                ) {
+                Button(onClick = { onDelete(event) }) {
                     Text("Delete")
                 }
             }
         }
     }
 }
-
 fun formatDateForDisplay(date: Date): String {
     val dateFormat = SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault())
     return dateFormat.format(date)

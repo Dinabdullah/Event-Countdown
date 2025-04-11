@@ -85,7 +85,7 @@ class EventViewModel(
         viewModelScope.launch {
             try {
                 _isLoading.value = true
-                eventDao.upsertNote(event)
+                eventDao.upsertEvent(event)
                 // Cancel existing notification and schedule new one
                 cancelExistingNotification(event.id)
                 scheduleNotification(event)
@@ -107,7 +107,7 @@ class EventViewModel(
         viewModelScope.launch {
             try {
                 _isLoading.value = true
-                eventDao.deleteNote(event)
+                eventDao.deleteEvent(event)
                 cancelExistingNotification(event.id)
                 loadEvents()
             } catch (e: Exception) {
