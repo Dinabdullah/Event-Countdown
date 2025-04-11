@@ -1,5 +1,9 @@
 package com.example.eventcountdown
 
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -8,7 +12,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Text
 import androidx.compose.material3.MaterialTheme
@@ -16,40 +19,78 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import kotlinx.coroutines.delay
 
 @Composable
 fun SplashScreen(
     viewModel: SplashViewModel,
     navController: NavController,
 ) {
+    // Animation states
+    var hourglassVisible by remember { mutableStateOf(false) }
+    var textVisible by remember { mutableStateOf(false) }
+    var contentVisible by remember { mutableStateOf(false) }
+
     val isLoading by viewModel.isLoading.collectAsState()
+    val shouldShowOnboarding by viewModel.shouldShowOnboarding.collectAsState()
+
+    // Hourglass animation
+    val hourglassRotation by animateFloatAsState(
+        targetValue = if (hourglassVisible) 360f else 0f,
+        animationSpec = tween(1500, easing = FastOutSlowInEasing),
+        label = "hourglassRotation"
+    )
+
+    // Text animation
+    val textScale by animateFloatAsState(
+        targetValue = if (textVisible) 1f else 0.7f,
+        animationSpec = spring(dampingRatio = 0.5f),
+        label = "textScale"
+    )
+
+    LaunchedEffect(Unit) {
+        hourglassVisible = true
+        delay(800)
+        textVisible = true
+    }
 
     LaunchedEffect(isLoading) {
         if (!isLoading) {
-            if (viewModel.shouldShowOnboarding()) {
+            delay(1500)
+            contentVisible = true
+
+            if (shouldShowOnboarding) {
                 navController.navigate("onboarding") {
                     popUpTo("splash") { inclusive = true }
                 }
             } else {
-                navController.navigate("main") {
+                navController.navigate("home") {
                     popUpTo("splash") { inclusive = true }
                 }
             }
         }
     }
 
+    // UI Content
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.primaryContainer),
+            .background(MaterialTheme.colorScheme.primaryContainer)
+            .alpha(if (contentVisible) 0f else 1f),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -59,20 +100,23 @@ fun SplashScreen(
             Image(
                 painter = painterResource(id = R.drawable.hour_glass),
                 contentDescription = "App Logo",
-                modifier = Modifier.size(120.dp),
+                modifier = Modifier
+                    .size(120.dp)
+                    .rotate(hourglassRotation),
                 contentScale = ContentScale.Fit
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
+
             Text(
                 text = "Eventat",
-                style = MaterialTheme.typography.headlineMedium.copy(
-                    fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.headlineLarge.copy(
+                    fontWeight = FontWeight.ExtraBold,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
-                )
+                ),
+                modifier = Modifier.scale(textScale),
+                fontSize = 36.sp
             )
         }
     }
-
-
 }

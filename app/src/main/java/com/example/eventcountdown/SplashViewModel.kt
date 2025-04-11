@@ -17,12 +17,15 @@ class SplashViewModel(
     private val _isLoading = MutableStateFlow(true)
     val isLoading = _isLoading.asStateFlow()
 
+    private val _shouldShowOnboarding = MutableStateFlow(true)
+    val shouldShowOnboarding = _shouldShowOnboarding.asStateFlow()
+
+
     init {
         viewModelScope.launch {
             delay(3000)
-
-
             _isLoading.value = false
+            _shouldShowOnboarding.value = !preferencesHelper.isOnboardingComplete
         }
     }
 
