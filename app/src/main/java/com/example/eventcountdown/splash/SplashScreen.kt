@@ -27,6 +27,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -86,11 +88,13 @@ fun SplashScreen(
         }
     }
 
+    val gradientColors = listOf(Color(0xFF2962FF), Color(0xFF87CEEB))
+
     // UI Content
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.primaryContainer)
+            .background(Brush.verticalGradient(gradientColors))
             .alpha(if (contentVisible) 0f else 1f),
         contentAlignment = Alignment.Center
     ) {

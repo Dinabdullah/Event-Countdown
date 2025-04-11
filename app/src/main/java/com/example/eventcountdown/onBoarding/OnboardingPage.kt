@@ -1,21 +1,28 @@
 package com.example.eventcountdown.onBoarding
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -24,91 +31,97 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPagerIndicator
+import com.google.accompanist.pager.PagerState
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun OnboardingPage(
     imageId: Int,
     description: String,
-    pagerState: com.google.accompanist.pager.PagerState,
+    pagerState: PagerState,
     onNextClick: () -> Unit,
     onSkipClick: () -> Unit
 ) {
-    Column(
+    val gradientColors = listOf(Color(0xFF2962FF), Color(0xFF87CEEB))
+
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.SpaceBetween,
-        horizontalAlignment = Alignment.CenterHorizontally
+            .background(Brush.verticalGradient(gradientColors))
     ) {
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp),
-            contentAlignment = Alignment.TopEnd
-        ) {
-            Text(
-                text = "Skip",
-                color = Color.Gray,
-                modifier = Modifier.clickable { onSkipClick() }
-            )
-        }
-
-
         Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp),
+            verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Icon(
-                painter = painterResource(id = imageId),
-                contentDescription = null,
-                modifier = Modifier
-                    .height(300.dp)
-                    .fillMaxWidth(),
-                tint = Color.Unspecified
-            )
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            Text(
-                text = description,
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(horizontal = 32.dp)
-            )
-        }
-
-
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 24.dp)
-        ) {
-            HorizontalPagerIndicator(
-                pagerState = pagerState,
-                modifier = Modifier.padding(16.dp),
-                activeColor = Color.Red,
-                inactiveColor = Color.LightGray,
-                spacing = 8.dp
-            )
-
-            Button(
-                onClick = { onNextClick() },
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
             ) {
-                Text(
-                    text = "Next",
-                    color = Color.White,
-                    fontSize = 16.sp
+                TextButton(
+                    onClick = onSkipClick,
+                    colors = ButtonDefaults.textButtonColors(contentColor = Color.White)
+                ) {
+                    Text("SKIP", fontWeight = FontWeight.Bold)
+                }
+            }
+
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.weight(1f)
+            ) {
+                Icon(
+                    painter = painterResource(id = imageId),
+                    contentDescription = null,
+                    modifier = Modifier.size(240.dp),
+                    tint = Color.Unspecified
                 )
+
+                Spacer(modifier = Modifier.height(48.dp))
+
+                Text(
+                    text = description,
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = Color.White,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(horizontal = 24.dp)
+                )
+            }
+
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                HorizontalPagerIndicator(
+                    pagerState = pagerState,
+                    modifier = Modifier.padding(16.dp),
+                    activeColor = Color.White,
+                    inactiveColor = Color.LightGray.copy(alpha = 0.5f),
+                    spacing = 12.dp,
+                    indicatorWidth = 12.dp,
+                    indicatorHeight = 12.dp
+                )
+
+                FilledTonalButton(
+                    onClick = onNextClick,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    colors = ButtonDefaults.filledTonalButtonColors(
+                        containerColor = Color.White,
+                        contentColor = Color(0xFF2962FF)
+                    ),
+                    shape = MaterialTheme.shapes.large
+                ) {
+                    Text(
+                        text = "Next",
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
         }
     }

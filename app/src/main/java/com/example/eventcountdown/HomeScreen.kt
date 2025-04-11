@@ -35,12 +35,12 @@ fun HomeScreen(navController: NavController, viewModel: EventViewModel) {
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { navController.navigate("addEvent") },
-                containerColor = Color.Blue,
+                containerColor =Color(0xFF2962FF),
                 contentColor = Color.White
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
-                    contentDescription = "Add Event"
+                    contentDescription = "Add Event",
                 )
             }
         }
@@ -104,30 +104,32 @@ fun EventItem(
 
     val diffMillis = eventTime - currentTime
     val totalSeconds = (diffMillis / 1000).coerceAtLeast(0)
-
-    // Proper time calculations
     val days = totalSeconds / 86400
     val hours = (totalSeconds % 86400) / 3600
     val minutes = (totalSeconds % 3600) / 60
     val seconds = totalSeconds % 60
 
-    // Calculate progress using precise values
     val progress = when {
         diffMillis <= 0 -> 1f
         days > 7 -> 0.75f
         days > 3 -> 0.5f
         days > 0 -> 0.25f
-        else -> {
-            val preciseHours = totalSeconds / 3600f
-            1 - (preciseHours / 24f)
-        }
+        else -> 1 - (totalSeconds / 86400f)
+    }
+
+    val containerColor = if (diffMillis <= 0) {
+        MaterialTheme.colorScheme.surfaceVariant
+    } else {
+        MaterialTheme.colorScheme.surface
     }
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.cardColors(containerColor = containerColor),
+        shape = MaterialTheme.shapes.large
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
@@ -139,32 +141,43 @@ fun EventItem(
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = event.title,
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.titleMedium
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.primary,
+                        maxLines = 1
                     )
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
                     Text(
                         text = event.description,
-                        style = MaterialTheme.typography.bodyMedium
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 2
                     )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
                     Text(
                         text = formatDateForDisplay(event.date),
-                        style = MaterialTheme.typography.bodySmall
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.outline
                     )
                 }
 
                 Box(
-                    modifier = Modifier.size(60.dp),
+                    modifier = Modifier.size(72.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator(
                         progress = progress,
-                        modifier = Modifier.size(60.dp),
-                        strokeWidth = 4.dp,
+                        modifier = Modifier.size(72.dp),
+                        strokeWidth = 6.dp,
                         color = when {
                             diffMillis <= 0 -> MaterialTheme.colorScheme.error
                             days < 1 -> MaterialTheme.colorScheme.primary
                             else -> MaterialTheme.colorScheme.secondary
-                        }
+                        },
+                        trackColor = MaterialTheme.colorScheme.surfaceVariant
                     )
                     Text(
                         text = when {
@@ -174,20 +187,36 @@ fun EventItem(
                             minutes > 0 -> "${minutes}m"
                             else -> "${seconds}s"
                         },
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            Row {
-                Button(onClick = { onUpdate(event) }) {
-                    Text("Update")
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                FilledTonalButton(
+                    onClick = { onUpdate(event) },
+                    colors = ButtonDefaults.filledTonalButtonColors(
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer
+                    )
+                ) {
+                    Text("Edit")
                 }
+
                 Spacer(modifier = Modifier.width(8.dp))
-                Button(onClick = { onDelete(event) }) {
+
+                FilledTonalButton(
+                    onClick = { onDelete(event) },
+                    colors = ButtonDefaults.filledTonalButtonColors(
+                        containerColor = MaterialTheme.colorScheme.errorContainer
+                    )
+                ) {
                     Text("Delete")
                 }
             }
