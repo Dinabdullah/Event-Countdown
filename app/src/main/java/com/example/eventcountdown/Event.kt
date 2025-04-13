@@ -1,5 +1,7 @@
 package com.example.eventcountdown
 
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
@@ -12,5 +14,11 @@ data class Event(
     val title: String,
     val description: String,
     val date: Date,
-    val color: String
-)
+//    val color: String,
+    val color: Int = Color.Blue.toArgb(),
+) {
+    // Helper function to convert back to Color
+    fun getColor(): Color {
+        return Color(color)
+    }
+}

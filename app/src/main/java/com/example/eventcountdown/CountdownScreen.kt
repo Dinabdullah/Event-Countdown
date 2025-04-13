@@ -4,15 +4,17 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -25,36 +27,38 @@ import kotlin.time.Duration.Companion.seconds
 fun CountdownScreen(
     eventId: Int,
     navController: NavController,
-    viewModel: EventViewModel
+    viewModel: EventViewModel,
 ) {
     val events by viewModel.events.collectAsState()
-    val event = events.find { it.id == eventId }
+    val event = events.find { it.id == eventId } ?: return Text("Event not found")
 
-    if (event == null) {
-        Text("Event not found")
-        return
-    }
-
-    // State for countdown timer
     var remainingTime by remember { mutableStateOf(calculateTimeRemaining(event.date)) }
 
-    // Update countdown every second
-    LaunchedEffect(key1 = event.date) {
+    LaunchedEffect(event.date) {
         while (true) {
             delay(1.seconds)
             remainingTime = calculateTimeRemaining(event.date)
         }
     }
 
+    val eventColor = remember { Color(event.color) }
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(event.title) },
+                title = { Text(event.title, color = MaterialTheme.colorScheme.onSurface) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            contentDescription = "Back",
+                            tint = MaterialTheme.colorScheme.onSurface
+                        )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                )
             )
         }
     ) { padding ->
@@ -62,140 +66,230 @@ fun CountdownScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // Time display
             Text(
-                text = event.title,
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.headlineMedium
+                text = formatTime(event.date),
+                style = MaterialTheme.typography.displaySmall,
+                color = eventColor,
+                modifier = Modifier.padding(top = 32.dp, bottom = 16.dp)
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = event.description,
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.bodyLarge
-            )
-
-            Spacer(modifier = Modifier.height(32.dp))
-
+            // Countdown display
             if (remainingTime.isNegative()) {
                 Text(
                     text = "Event has passed",
                     fontSize = 18.sp,
-                    color = MaterialTheme.colorScheme.error
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(vertical = 16.dp)
                 )
             } else {
-                CountdownDisplay(remainingTime)
+                CountdownDisplay(remainingTime, eventColor)
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            // Event details
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp, vertical = 32.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = event.title,
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
 
-            Text(
-                text = "Event date: ${formatDate(event.date)}",
-                style = MaterialTheme.typography.bodyMedium
+                Text(
+                    text = event.description,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+
+                Text(
+                    text = formatFullDate(event.date),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = eventColor
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun CountdownDisplay(
+    duration: TimeRemaining,
+    color: Color
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // Main countdown circle
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.size(200.dp)
+        ) {
+            val progress by animateFloatAsState(
+                targetValue = duration.progress(),
+                animationSpec = tween(durationMillis = 1000, easing = LinearEasing),
+                label = "countdown"
+            )
+
+            CircularProgressIndicator(
+                progress = 1f,
+                modifier = Modifier.fillMaxSize(),
+                strokeWidth = 12.dp,
+                color = color.copy(alpha = 0.2f)
+            )
+
+            CircularProgressIndicator(
+                progress = progress,
+                modifier = Modifier.fillMaxSize(),
+                strokeWidth = 12.dp,
+                color = color
+            )
+
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = "${duration.days}d ${duration.hours}h",
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = "${duration.minutes}m ${duration.seconds}s",
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        // Time unit breakdown
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            CountdownUnit(
+                value = duration.days,
+                unit = "DAYS",
+                color = color,
+                totalValue = duration.days + 1
+            )
+            CountdownUnit(
+                value = duration.hours,
+                unit = "HOURS",
+                color = color,
+                totalValue = 24
+            )
+            CountdownUnit(
+                value = duration.minutes,
+                unit = "MINUTES",
+                color = color,
+                totalValue = 60
+            )
+            CountdownUnit(
+                value = duration.seconds,
+                unit = "SECONDS",
+                color = color,
+                totalValue = 60
             )
         }
     }
 }
 
 @Composable
-fun CountdownDisplay(duration: TimeRemaining) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center
-    ) {
-        CountdownUnit(value = duration.days, unit = "DAYS")
-        Spacer(modifier = Modifier.width(16.dp))
-        CountdownUnit(value = duration.hours, unit = "HOURS")
-        Spacer(modifier = Modifier.width(16.dp))
-        CountdownUnit(value = duration.minutes, unit = "MINUTES")
-        Spacer(modifier = Modifier.width(16.dp))
-        CountdownUnit(value = duration.seconds, unit = "SECONDS")
-    }
-}
-
-@Composable
-fun CountdownUnit(value: Long, unit: String) {
-    val maxValue = when (unit) {
-        "HOURS" -> 24f
-        "MINUTES", "SECONDS" -> 60f
-        else -> 1f  // For days, we'll use a full circle
-    }
-    val progress = value.toFloat() / maxValue
-
+fun CountdownUnit(
+    value: Long,
+    unit: String,
+    color: Color,
+    totalValue: Long
+) {
     val animatedProgress by animateFloatAsState(
-        targetValue = progress,
-        animationSpec = tween(durationMillis = 500, easing = LinearEasing)
+        targetValue = if (totalValue > 0) value.toFloat() / totalValue.toFloat() else 0f,
+        animationSpec = tween(durationMillis = 1000, easing = LinearEasing),
+        label = "unitProgress"
     )
 
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.padding(horizontal = 8.dp)
     ) {
         Box(
-            modifier = Modifier.size(90.dp),
-            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.size(80.dp)
         ) {
             CircularProgressIndicator(
                 progress = animatedProgress,
-                modifier = Modifier.size(90.dp),
-                strokeWidth = 8.dp,
-                color = MaterialTheme.colorScheme.primary,
-                trackColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                modifier = Modifier.fillMaxSize(),
+                strokeWidth = 6.dp,
+                color = color,
+                trackColor = color.copy(alpha = 0.2f)
             )
             Text(
-                text = value.toString(),
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
+                text = value.toString().padStart(2, '0'),
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold
             )
         }
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = unit,
-            fontSize = 12.sp,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
         )
     }
 }
 
+// Helper functions
+fun formatTime(date: Date): String {
+    val calendar = Calendar.getInstance()
+    calendar.time = date
+    return "${calendar.get(Calendar.HOUR_OF_DAY)}:${"%02d".format(calendar.get(Calendar.MINUTE))}"
+}
+
+fun formatFullDate(date: Date): String {
+    val calendar = Calendar.getInstance()
+    calendar.time = date
+    return "${calendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault())} " +
+            "${calendar.get(Calendar.DAY_OF_MONTH)}, ${calendar.get(Calendar.YEAR)}"
+}
+
 data class TimeRemaining(
+    val totalMillis: Long,
+    val remainingMillis: Long,
     val days: Long,
     val hours: Long,
     val minutes: Long,
     val seconds: Long
 ) {
-    fun isNegative(): Boolean {
-        return days < 0 || hours < 0 || minutes < 0 || seconds < 0
-    }
+    fun isNegative(): Boolean = remainingMillis <= 0
+    fun progress(): Float = if (totalMillis > 0) remainingMillis.toFloat() / totalMillis.toFloat() else 0f
 }
 
 fun calculateTimeRemaining(eventDate: Date): TimeRemaining {
     val currentTime = System.currentTimeMillis()
     val eventTime = eventDate.time
-    val diffMillis = eventTime - currentTime
+    val remainingMillis = eventTime - currentTime
 
-    if (diffMillis <= 0) {
-        return TimeRemaining(0, 0, 0, 0)
+    if (remainingMillis <= 0) {
+        return TimeRemaining(0, 0, 0, 0, 0, 0)
     }
 
-    val seconds = (diffMillis / 1000) % 60
-    val minutes = (diffMillis / (1000 * 60)) % 60
-    val hours = (diffMillis / (1000 * 60 * 60)) % 24
-    val days = diffMillis / (1000 * 60 * 60 * 24)
-
-    return TimeRemaining(days, hours, minutes, seconds)
+    return TimeRemaining(
+        totalMillis = eventTime - eventDate.time,
+        remainingMillis = remainingMillis,
+        days = remainingMillis / (1000 * 60 * 60 * 24),
+        hours = (remainingMillis / (1000 * 60 * 60)) % 24,
+        minutes = (remainingMillis / (1000 * 60)) % 60,
+        seconds = (remainingMillis / 1000) % 60
+    )
 }
-
-fun formatDate(date: Date): String {
-    val calendar = Calendar.getInstance()
-    calendar.time = date
-
-    return "${calendar.get(Calendar.DAY_OF_MONTH)}/${calendar.get(Calendar.MONTH) + 1}/${calendar.get(Calendar.YEAR)} " +
-            "${calendar.get(Calendar.HOUR_OF_DAY)}:${String.format("%02d", calendar.get(Calendar.MINUTE))}"
-}
-
