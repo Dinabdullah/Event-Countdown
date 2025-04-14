@@ -1,17 +1,46 @@
 package com.example.eventcountdown
 
 import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -19,7 +48,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import kotlinx.coroutines.delay
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
+import kotlin.math.cos
+import kotlin.math.sin
 import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -67,8 +100,39 @@ fun CountdownScreen(
                 .fillMaxSize()
                 .padding(padding)
                 .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
+            // Event details
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp, vertical = 24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = event.title,
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = eventColor,
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+
+                Text(
+                    text = event.description,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+
+                Text(
+                    text = formatFullDate(event.date),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = eventColor,
+                )
+            }
             // Time display
             Text(
                 text = formatTime(event.date),
@@ -89,35 +153,7 @@ fun CountdownScreen(
                 CountdownDisplay(remainingTime, eventColor)
             }
 
-            // Event details
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp, vertical = 32.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = event.title,
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
 
-                Text(
-                    text = event.description,
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-
-                Text(
-                    text = formatFullDate(event.date),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = eventColor
-                )
-            }
         }
     }
 }
@@ -125,38 +161,66 @@ fun CountdownScreen(
 @Composable
 fun CountdownDisplay(
     duration: TimeRemaining,
-    color: Color
+    color: Color,
 ) {
+    // Rolling circle animation state
+    val infiniteTransition = rememberInfiniteTransition()
+    val rollingPosition by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(2000, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        )
+    )
+
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Main countdown circle
         Box(
             contentAlignment = Alignment.Center,
-            modifier = Modifier.size(200.dp)
+            modifier = Modifier.size(220.dp) // Increased size to accommodate rolling circle
         ) {
+            // Main countdown progress
             val progress by animateFloatAsState(
                 targetValue = duration.progress(),
-                animationSpec = tween(durationMillis = 1000, easing = LinearEasing),
-                label = "countdown"
+                animationSpec = tween(1000, easing = LinearEasing)
             )
 
+            // Background track
             CircularProgressIndicator(
                 progress = 1f,
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.size(200.dp),
                 strokeWidth = 12.dp,
                 color = color.copy(alpha = 0.2f)
             )
 
+            // Main progress
             CircularProgressIndicator(
                 progress = progress,
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.size(200.dp),
                 strokeWidth = 12.dp,
                 color = color
             )
 
+            // Rolling circle (rotating around the main circle)
+            Canvas(modifier = Modifier.fillMaxSize()) {
+                val radius = 100.dp.toPx()
+                val angle =
+                    (rollingPosition * 360f) * (Math.PI.toFloat() / 180f) // Proper angle conversion
+                val x = radius * cos(angle) + center.x
+                val y = radius * sin(angle) + center.y
+
+                drawCircle(
+                    color = color,
+                    radius = 16.dp.toPx(),
+                    center = Offset(x, y)
+                )
+            }
+
+            // Time display
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
                     text = "${duration.days}d ${duration.hours}h",
@@ -211,7 +275,7 @@ fun CountdownUnit(
     value: Long,
     unit: String,
     color: Color,
-    totalValue: Long
+    totalValue: Long,
 ) {
     val animatedProgress by animateFloatAsState(
         targetValue = if (totalValue > 0) value.toFloat() / totalValue.toFloat() else 0f,
@@ -269,10 +333,11 @@ data class TimeRemaining(
     val days: Long,
     val hours: Long,
     val minutes: Long,
-    val seconds: Long
+    val seconds: Long,
 ) {
     fun isNegative(): Boolean = remainingMillis <= 0
-    fun progress(): Float = if (totalMillis > 0) remainingMillis.toFloat() / totalMillis.toFloat() else 0f
+    fun progress(): Float =
+        if (totalMillis > 0) remainingMillis.toFloat() / totalMillis.toFloat() else 0f
 }
 
 fun calculateTimeRemaining(eventDate: Date): TimeRemaining {
