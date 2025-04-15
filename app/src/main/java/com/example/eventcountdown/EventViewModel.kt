@@ -94,7 +94,7 @@ class EventViewModel(
         loadEvents()
     }
 
-    fun loadEvents() {
+    private fun loadEvents() {
         viewModelScope.launch {
             eventDao.getAllEvents().collect { _events.value = it }
         }
@@ -181,7 +181,7 @@ class EventViewModel(
     }
 
 
-    fun loadHolidays(year: Int = 2024, countryCode: String = "EG") {
+    private fun loadHolidays(year: Int = 2024, countryCode: String = "EG") {
         viewModelScope.launch {
             try {
                 _holidays.value = holidayRepository.getHolidays(year, countryCode)

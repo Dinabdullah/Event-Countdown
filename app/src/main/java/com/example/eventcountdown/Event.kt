@@ -14,7 +14,6 @@ data class Event(
     val title: String,
     val description: String,
     val date: Date,
-//    val color: String,
     val color: Int = Color.Blue.toArgb(),
 ) {
     // Helper function to convert back to Color
