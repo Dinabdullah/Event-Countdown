@@ -1,24 +1,86 @@
 package com.example.eventcountdown
 
 import android.app.Application
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.workDataOf
+import com.example.eventcountdown.api.Holiday
+import com.example.eventcountdown.api.HolidayRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 class EventViewModel(
     application: Application,
-    private val eventDao: EventDao
-) : AndroidViewModel(application)
-{
+    private val eventDao: EventDao,
+    private val holidayRepository: HolidayRepository
+) : AndroidViewModel(application) {
+
+
+    private val _isAddingHolidays = MutableStateFlow(false)
+    val isAddingHolidays: StateFlow<Boolean> = _isAddingHolidays.asStateFlow()
+
+    fun autoCreateHolidayEvents() {
+        viewModelScope.launch {
+            try {
+                _isAddingHolidays.value = true
+                val existingEvents = eventDao.getAllEventsOnce()
+
+                holidays.value.forEach { holiday ->
+                    val date = try {
+                        val calendar = Calendar.getInstance().apply {
+                            time = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                                .parse(holiday.date) ?: return@forEach
+                            set(Calendar.HOUR_OF_DAY, 9)
+                            set(Calendar.MINUTE, 0)
+                            set(Calendar.SECOND, 0)
+                            set(Calendar.MILLISECOND, 0)
+                        }
+                        calendar.time
+                    } catch (e: Exception) {
+                        return@forEach
+                    }
+
+                    // Check if event already exists
+                    val isDuplicate = existingEvents.any {
+                        it.title == holiday.name && it.date == date
+                    }
+
+                    if (!isDuplicate) {
+                        val event = Event(
+                            title = holiday.name,
+                            description = "Public Holiday: ${holiday.localName}",
+                            date = date,
+                            color = Color.Green.toArgb() // Different color for holidays
+                        )
+                        eventDao.insert(event)
+                    }
+                }
+
+                loadEvents() // Refresh the event list
+            } catch (e: Exception) {
+                _error.value = "Failed to add holidays: ${e.message}"
+            } finally {
+                _isAddingHolidays.value = false
+            }
+        }
+    }
+
+
+    private val _holidays = MutableStateFlow<List<Holiday>>(emptyList())
+    val holidays: StateFlow<List<Holiday>> = _holidays.asStateFlow()
+
+
     private val _events = MutableStateFlow<List<Event>>(emptyList())
     val events: StateFlow<List<Event>> = _events.asStateFlow()
 
@@ -118,7 +180,21 @@ class EventViewModel(
         }
     }
 
-    fun clearError() {
-        _error.value = null
+
+    fun loadHolidays(year: Int = 2024, countryCode: String = "EG") {
+        viewModelScope.launch {
+            try {
+                _holidays.value = holidayRepository.getHolidays(year, countryCode)
+                autoCreateHolidayEvents() // Auto-create after loading
+            } catch (e: Exception) {
+                _error.value = "Holiday load failed: ${e.message}"
+            }
+        }
     }
+
+    init {
+        loadEvents()
+        loadHolidays()
+    }
+
 }

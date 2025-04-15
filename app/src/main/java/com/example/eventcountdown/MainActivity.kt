@@ -1,5 +1,10 @@
 package com.example.eventcountdown
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -8,15 +13,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.room.Room
+import com.example.eventcountdown.api.HolidayRepository
+import com.example.eventcountdown.api.RetrofitClient
 import com.example.eventcountdown.ui.theme.EventCountdownTheme
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.content.Context
-import android.content.pm.PackageManager
-import android.graphics.Color
-import android.os.Build
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,11 +33,18 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    EventNavigation(EventViewModel(application = application, db.eventDao()))
+                    val holidayRepository = HolidayRepository(RetrofitClient.api)
+                    EventNavigation(
+                        EventViewModel(
+                            application = application,
+                            eventDao = db.eventDao(),
+                            holidayRepository = holidayRepository
+                        )
+                    )
                 }
             }
         }
-        requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),100)
+        requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 100)
         createNotificationChannel()
 
     }
@@ -57,7 +63,8 @@ class MainActivity : ComponentActivity() {
                 enableVibration(true)
             }
 
-            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val notificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
     }

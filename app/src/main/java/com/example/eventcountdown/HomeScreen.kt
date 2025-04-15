@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -23,11 +24,13 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -39,23 +42,24 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.eventcountdown.api.Holiday
 import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavController, viewModel: EventViewModel) {
     val events by viewModel.events.collectAsState()
+    val holidays by viewModel.holidays.collectAsState()
     val now = remember { System.currentTimeMillis() }
     var currentTime by remember { mutableStateOf(now) }
+    val isAddingHolidays by viewModel.isAddingHolidays.collectAsState()
 
     LaunchedEffect(Unit) {
         while (true) {
@@ -70,7 +74,8 @@ fun HomeScreen(navController: NavController, viewModel: EventViewModel) {
                 title = {
                     Text(
                         "Event Countdown",
-                        style = MaterialTheme.typography.headlineSmall
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
             )
@@ -85,76 +90,82 @@ fun HomeScreen(navController: NavController, viewModel: EventViewModel) {
             }
         }
     ) { padding ->
-        if (events.isEmpty()) {
-            EmptyStateView(modifier = Modifier.padding(padding))
-        } else {
-            EventList(
-                events = events,
-                currentTime = currentTime,
-                onEventClick = { navController.navigate("countdownEvent/${it.id}") },
-                onEdit = { navController.navigate("updateEvent/${it.id}") },
-                onDelete = viewModel::deleteEvent,
-                modifier = Modifier.padding(padding)
-            )
+        Box(modifier = Modifier.fillMaxSize()) {
+            if (events.isEmpty() && holidays.isEmpty()) {
+                EmptyStateView(modifier = Modifier.padding(padding))
+            } else {
+                CombinedEventList(
+                    events = events,
+                    holidays = holidays,
+                    currentTime = currentTime,
+                    onEventClick = { navController.navigate("countdownEvent/${it.id}") },
+                    onEdit = { navController.navigate("updateEvent/${it.id}") },
+                    onDelete = viewModel::deleteEvent,
+                    modifier = Modifier.padding(padding)
+                )
+            }
+            if (isAddingHolidays) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clickable(enabled = false) {},
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
         }
     }
 }
 
 @Composable
-private fun EmptyStateView(modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.notes),
-            contentDescription = "Empty events icon",
-            modifier = Modifier.size(250.dp),
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = "No events yet",
-            style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-        )
-        Text(
-            text = "Tap the + button to add your first event",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
-            modifier = Modifier.padding(top = 8.dp)
-        )
-    }
-}
-
-@Composable
-private fun EventList(
+private fun CombinedEventList(
     events: List<Event>,
+    holidays: List<Holiday>,
     currentTime: Long,
     onEventClick: (Event) -> Unit,
     onEdit: (Event) -> Unit,
     onDelete: (Event) -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     val upcomingEvents = remember(events, currentTime) {
-        events.filter { it.date.time > currentTime }
-            .sortedBy { it.date.time }
+        events.filter { it.date.time > currentTime }.sortedBy { it.date.time }
     }
-
     val pastEvents = remember(events, currentTime) {
-        events.filter { it.date.time <= currentTime }
-            .sortedByDescending { it.date.time }
+        events.filter { it.date.time <= currentTime }.sortedByDescending { it.date.time }
     }
 
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        if (upcomingEvents.isNotEmpty()) {
+        // Horizontal Scrollable Holidays Section
+        if (holidays.isNotEmpty()) {
             item {
-                SectionHeader("Upcoming Events (${upcomingEvents.size})")
+                Column {
+                    SectionHeader("Public Holidays (${holidays.size})")
+                    Spacer(modifier = Modifier.height(8.dp))
+                    LazyRow(
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        contentPadding = PaddingValues(horizontal = 16.dp)
+                    ) {
+                        items(holidays) { holiday ->
+                            HolidayCard(
+                                holiday = holiday,
+                                currentTime = currentTime,
+                                modifier = Modifier.width(280.dp)
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
             }
+        }
+
+        // Upcoming Events Section
+        if (upcomingEvents.isNotEmpty()) {
+            item { SectionHeader("Your Upcoming Events (${upcomingEvents.size})") }
             items(upcomingEvents) { event ->
                 EventCard(
                     event = event,
@@ -166,10 +177,9 @@ private fun EventList(
             }
         }
 
+        // Past Events Section
         if (pastEvents.isNotEmpty()) {
-            item {
-                SectionHeader("Past Events (${pastEvents.size})")
-            }
+            item { SectionHeader("Past Events (${pastEvents.size})") }
             items(pastEvents) { event ->
                 EventCard(
                     event = event,
@@ -184,13 +194,138 @@ private fun EventList(
 }
 
 @Composable
+fun HolidayCard(
+    holiday: Holiday,
+    currentTime: Long,
+    modifier: Modifier = Modifier
+) {
+    val dateFormat = remember { SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) }
+    val parsedDate = remember {
+        try {
+            dateFormat.parse(holiday.date) ?: Date()
+        } catch (e: Exception) {
+            Date()
+        }
+    }
+    val eventTime = parsedDate.time
+    val isPast = eventTime <= currentTime
+
+    Card(
+        modifier = modifier,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        shape = MaterialTheme.shapes.large
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = holiday.name,
+                        style = MaterialTheme.typography.titleSmall,
+                        color = MaterialTheme.colorScheme.onTertiaryContainer,
+                        maxLines = 2
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = holiday.localName,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.8f),
+                        maxLines = 2
+                    )
+                }
+
+                Icon(
+                    painter = painterResource(R.drawable.ic_holiday),
+                    contentDescription = "Holiday",
+                    tint = MaterialTheme.colorScheme.tertiary,
+                    modifier = Modifier.size(32.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = formatDateForDisplay(parsedDate),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.8f)
+                )
+
+                Surface(
+                    shape = MaterialTheme.shapes.small,
+                    color = if (isPast) MaterialTheme.colorScheme.errorContainer
+                    else MaterialTheme.colorScheme.primaryContainer
+                ) {
+                    Text(
+                        text = if (isPast) "Passed" else "Upcoming",
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = if (isPast) MaterialTheme.colorScheme.onErrorContainer
+                        else MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun EmptyStateView(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.notes),
+            contentDescription = "Empty events icon",
+            modifier = Modifier.size(250.dp)
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = "No events or holidays",
+            style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+        )
+        Text(
+            text = "Tap the + button to add your first event",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
+            modifier = Modifier.padding(top = 8.dp)
+        )
+    }
+}
+
+@Composable
 private fun SectionHeader(title: String) {
-    Text(
-        text = title,
-        style = MaterialTheme.typography.titleMedium,
-        color = MaterialTheme.colorScheme.primary,
-        modifier = Modifier.padding(vertical = 8.dp)
-    )
+    Column {
+        Spacer(Modifier.height(8.dp))
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(vertical = 4.dp)
+        )
+        Divider(
+            color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f),
+            thickness = 1.dp
+        )
+    }
 }
 
 @Composable
