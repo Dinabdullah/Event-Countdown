@@ -50,21 +50,18 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val importance = NotificationManager.IMPORTANCE_HIGH
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 "event_countdown_channel",
                 "Event Countdown Notifications",
-                importance
+                NotificationManager.IMPORTANCE_HIGH
             ).apply {
-                description = "Notifications for when events are due"
+                description = "Notifications for when events are happening"
                 enableLights(true)
-                lightColor = Color.RED
                 enableVibration(true)
             }
 
-            val notificationManager =
-                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
     }

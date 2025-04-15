@@ -5,8 +5,10 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
+import androidx.room.Room
 import androidx.work.Worker
 import androidx.work.WorkerParameters
+import kotlinx.coroutines.runBlocking
 
 class EventNotificationWorker(
     private val context: Context,
@@ -15,22 +17,39 @@ class EventNotificationWorker(
 
     override fun doWork(): Result {
         val eventId = inputData.getInt("EVENT_ID", -1)
-        val eventTitle = inputData.getString("EVENT_TITLE") ?: "Event Time!"
+        if (eventId < 0) return Result.success()
 
-        showNotification(eventId, eventTitle)
+        // 1. Open your database
+        val db = Room.databaseBuilder(
+            context.applicationContext,
+            AppDatabase::class.java,
+            "event_database.db"
+        )
+            .fallbackToDestructiveMigration()
+            .build()
 
+        // 2. Check if the event still exists
+        val event = runBlocking {
+            db.eventDao().getEventById(eventId)
+        }
+        if (event == null) {
+            // event was deleted — nothing to do
+            return Result.success()
+        }
+
+        // 3. Fire the notification using the up‑to‑date title
+        showNotification(eventId, event.title)
         return Result.success()
     }
 
     private fun showNotification(eventId: Int, eventTitle: String) {
-        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager =
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        // Create intent to open the app when notification is clicked
         val intent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             putExtra("NAVIGATE_TO_EVENT_ID", eventId)
         }
-
         val pendingIntent = PendingIntent.getActivity(
             context,
             eventId,

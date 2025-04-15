@@ -23,4 +23,7 @@ interface EventDao {
 
     @Query("SELECT * FROM events")
     suspend fun getAllEventsOnce(): List<Event>
+
+    @Query("SELECT * FROM events WHERE id = :id LIMIT 1")
+    suspend fun getEventById(id: Int): Event?
 }
