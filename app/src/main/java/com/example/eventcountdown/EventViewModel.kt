@@ -129,6 +129,7 @@ class EventViewModel(
             )
 
             val notificationWork = OneTimeWorkRequestBuilder<EventNotificationWorker>()
+                .setInputData(workDataOf("EVENT_ID" to event.id))
                 .setInitialDelay(delay, TimeUnit.MILLISECONDS)
                 .setInputData(inputData)
                 .addTag("event_notification_${event.id}")
@@ -148,7 +149,6 @@ class EventViewModel(
             try {
                 _isLoading.value = true
                 eventDao.upsertEvent(event)
-                // Cancel existing notification and schedule new one
                 cancelExistingNotification(event.id)
                 scheduleNotification(event)
                 loadEvents()
