@@ -2,6 +2,7 @@ package com.example.eventcountdown.ui
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -24,14 +25,30 @@ fun AddEventScreen(navController: NavController, viewModel: EventViewModel) {
     val context = LocalContext.current
     val calendar = remember { Calendar.getInstance() }
 
+    // Create today's date at midnight for comparison
+    val today = Calendar.getInstance().apply {
+        set(Calendar.HOUR_OF_DAY, 0)
+        set(Calendar.MINUTE, 0)
+        set(Calendar.SECOND, 0)
+        set(Calendar.MILLISECOND, 0)
+    }
+
     val datePicker = DatePickerDialog(
         context,
-        { _, y, m, d ->
+        { _, year, month, dayOfMonth ->
             TimePickerDialog(
                 context,
-                { _, h, min ->
-                    calendar.set(y, m, d, h, min,0)
-                    selectedDate = calendar.time
+                { _, hour, minute ->
+                    calendar.set(year, month, dayOfMonth, hour, minute, 0)
+                    if (calendar.timeInMillis >= System.currentTimeMillis()) {
+                        selectedDate = calendar.time
+                    } else {
+                        Toast.makeText(
+                            context,
+                            "Please select a future date and time",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 },
                 calendar.get(Calendar.HOUR_OF_DAY),
                 calendar.get(Calendar.MINUTE),
@@ -41,7 +58,10 @@ fun AddEventScreen(navController: NavController, viewModel: EventViewModel) {
         calendar.get(Calendar.YEAR),
         calendar.get(Calendar.MONTH),
         calendar.get(Calendar.DAY_OF_MONTH)
-    )
+    ).apply {
+        // Prevent selecting past dates in the date picker
+        datePicker.minDate = System.currentTimeMillis() - 1000
+    }
 
     Scaffold(
         topBar = {
@@ -84,20 +104,37 @@ fun AddEventScreen(navController: NavController, viewModel: EventViewModel) {
                 Text("Select Date & Time")
             }
 
-            Text("Selected: ${selectedDate?.toString() ?: "Not selected"}")
+            Text(
+                text = selectedDate?.let {
+                    "Selected: ${it.toString()}"
+                } ?: "No date selected",
+                color = if (selectedDate?.before(Date()) == true) {
+                    Color.Red
+                } else {
+                    Color.Unspecified
+                }
+            )
 
             Button(
                 onClick = {
-                    selectedDate?.let {
-                        viewModel.addEvent(
-                            Event(
-                                title = title,
-                                description = description,
-                                date = it,
-                                color = Color.Blue.toArgb()
+                    selectedDate?.let { date ->
+                        if (date.before(Date())) {
+                            Toast.makeText(
+                                context,
+                                "Please select a future date",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            viewModel.addEvent(
+                                Event(
+                                    title = title,
+                                    description = description,
+                                    date = date,
+                                    color = Color.Blue.toArgb()
+                                )
                             )
-                        )
-                        navController.popBackStack()
+                            navController.popBackStack()
+                        }
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
