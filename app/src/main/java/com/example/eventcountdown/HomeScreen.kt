@@ -1,99 +1,61 @@
 package com.example.eventcountdown
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavController, viewModel: EventViewModel) {
     val events by viewModel.events.collectAsState()
-
-    Scaffold(
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = { navController.navigate("addEvent") },
-                containerColor =Color(0xFF2962FF),
-                contentColor = Color.White
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Add Event",
-                )
-            }
-        }
-    ) { padding ->
-        if (events.isEmpty()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "No events yet",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.titleLarge
-                )
-            }
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding),
-                contentPadding = PaddingValues(horizontal = 8.dp)
-            ) {
-                items(events){ event ->
-                    EventItem(
-                        event = event,
-                        onUpdate = {
-                            navController.navigate("updateEvent/${it.id}")
-                        },
-                        onDelete = { eventToDelete ->
-                            viewModel.deleteEvent(eventToDelete)
-                        },
-                        onClick   = {
-                            navController.navigate("countdownEvent/${it.id}")
-                        }
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun EventItem(
-    event: Event,
-    onUpdate: (Event) -> Unit,
-    onDelete: (Event) -> Unit,
-    onClick: (Event) -> Unit
-) {
-    var currentTime by remember { mutableStateOf(System.currentTimeMillis()) }
-    val eventTime = event.date.time
+    val now = remember { System.currentTimeMillis() }
+    var currentTime by remember { mutableStateOf(now) }
 
     LaunchedEffect(Unit) {
         while (true) {
@@ -102,47 +64,195 @@ fun EventItem(
         }
     }
 
-    val diffMillis = eventTime - currentTime
-    val totalSeconds = (diffMillis / 1000).coerceAtLeast(0)
-    val days = totalSeconds / 86400
-    val hours = (totalSeconds % 86400) / 3600
-    val minutes = (totalSeconds % 3600) / 60
-    val seconds = totalSeconds % 60
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        "Event Countdown",
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+                }
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { navController.navigate("addEvent") },
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Add Event")
+            }
+        }
+    ) { padding ->
+        if (events.isEmpty()) {
+            EmptyStateView(modifier = Modifier.padding(padding))
+        } else {
+            EventList(
+                events = events,
+                currentTime = currentTime,
+                onEventClick = { navController.navigate("countdownEvent/${it.id}") },
+                onEdit = { navController.navigate("updateEvent/${it.id}") },
+                onDelete = viewModel::deleteEvent,
+                modifier = Modifier.padding(padding)
+            )
+        }
+    }
+}
 
-    val progress = when {
-        diffMillis <= 0 -> 1f
-        days > 7 -> 0.75f
-        days > 3 -> 0.5f
-        days > 0 -> 0.25f
-        else -> 1 - (totalSeconds / 86400f)
+@Composable
+private fun EmptyStateView(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.notes),
+            contentDescription = "Empty events icon",
+            modifier = Modifier.size(250.dp),
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = "No events yet",
+            style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+        )
+        Text(
+            text = "Tap the + button to add your first event",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
+            modifier = Modifier.padding(top = 8.dp)
+        )
+    }
+}
+
+@Composable
+private fun EventList(
+    events: List<Event>,
+    currentTime: Long,
+    onEventClick: (Event) -> Unit,
+    onEdit: (Event) -> Unit,
+    onDelete: (Event) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val upcomingEvents = remember(events, currentTime) {
+        events.filter { it.date.time > currentTime }
+            .sortedBy { it.date.time }
     }
 
-    val containerColor = if (diffMillis <= 0) {
-        MaterialTheme.colorScheme.surfaceVariant
-    } else {
-        MaterialTheme.colorScheme.surface
+    val pastEvents = remember(events, currentTime) {
+        events.filter { it.date.time <= currentTime }
+            .sortedByDescending { it.date.time }
+    }
+
+    LazyColumn(
+        modifier = modifier.fillMaxSize(),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        if (upcomingEvents.isNotEmpty()) {
+            item {
+                SectionHeader("Upcoming Events (${upcomingEvents.size})")
+            }
+            items(upcomingEvents) { event ->
+                EventCard(
+                    event = event,
+                    currentTime = currentTime,
+                    onClick = { onEventClick(event) },
+                    onEdit = { onEdit(event) },
+                    onDelete = { onDelete(event) }
+                )
+            }
+        }
+
+        if (pastEvents.isNotEmpty()) {
+            item {
+                SectionHeader("Past Events (${pastEvents.size})")
+            }
+            items(pastEvents) { event ->
+                EventCard(
+                    event = event,
+                    currentTime = currentTime,
+                    onClick = { onEventClick(event) },
+                    onEdit = { onEdit(event) },
+                    onDelete = { onDelete(event) }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun SectionHeader(title: String) {
+    Text(
+        text = title,
+        style = MaterialTheme.typography.titleMedium,
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.padding(vertical = 8.dp)
+    )
+}
+
+@Composable
+private fun EventCard(
+    event: Event,
+    currentTime: Long,
+    onClick: () -> Unit,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit,
+) {
+    val eventTime = event.date.time
+    val isPastEvent = eventTime <= currentTime
+    val diffMillis = (eventTime - currentTime).coerceAtLeast(0)
+
+    val days = diffMillis / (1000 * 60 * 60 * 24)
+    val hours = (diffMillis / (1000 * 60 * 60)) % 24
+    val minutes = (diffMillis / (1000 * 60)) % 60
+    val seconds = (diffMillis / 1000) % 60
+
+    val timeText = when {
+        isPastEvent -> "Completed"
+        days > 0 -> "${days}d ${hours}h"
+        hours > 0 -> "${hours}h ${minutes}m"
+        else -> "${minutes}m ${seconds}s"
+    }
+
+    val progress = when {
+        isPastEvent -> 1f
+        days > 7 -> 0.25f
+        days > 3 -> 0.5f
+        days > 0 -> 0.75f
+        else -> 1 - (diffMillis.toFloat() / (24 * 60 * 60 * 1000))
     }
 
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = if (isPastEvent) {
+                MaterialTheme.colorScheme.surfaceVariant
+            } else {
+                MaterialTheme.colorScheme.surface
+            }
+        ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(containerColor = containerColor),
-        shape = MaterialTheme.shapes.large
+        shape = MaterialTheme.shapes.medium
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { onClick(event) },
+                    .clickable(onClick = onClick),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = event.title,
                         style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.primary,
+                        color = if (isPastEvent) {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        } else {
+                            MaterialTheme.colorScheme.primary
+                        },
                         maxLines = 1
                     )
 
@@ -168,28 +278,28 @@ fun EventItem(
                     modifier = Modifier.size(72.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    CircularProgressIndicator(
-                        progress = progress,
-                        modifier = Modifier.size(72.dp),
-                        strokeWidth = 6.dp,
-                        color = when {
-                            diffMillis <= 0 -> MaterialTheme.colorScheme.error
-                            days < 1 -> MaterialTheme.colorScheme.primary
-                            else -> MaterialTheme.colorScheme.secondary
-                        },
-                        trackColor = MaterialTheme.colorScheme.surfaceVariant
-                    )
+                    if (!isPastEvent) {
+                        CircularProgressIndicator(
+                            progress = progress,
+                            modifier = Modifier.size(72.dp),
+                            strokeWidth = 6.dp,
+                            color = when {
+                                days < 1 -> MaterialTheme.colorScheme.error
+                                days < 3 -> MaterialTheme.colorScheme.primary
+                                else -> MaterialTheme.colorScheme.secondary
+                            },
+                            trackColor = MaterialTheme.colorScheme.surfaceVariant
+                        )
+                    }
                     Text(
-                        text = when {
-                            diffMillis <= 0 -> "🎉"
-                            days > 0 -> "${days}d"
-                            hours > 0 -> "${hours}h"
-                            minutes > 0 -> "${minutes}m"
-                            else -> "${seconds}s"
-                        },
+                        text = timeText,
                         style = MaterialTheme.typography.labelLarge,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = if (isPastEvent) {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        } else {
+                            MaterialTheme.colorScheme.onSurface
+                        }
                     )
                 }
             }
@@ -200,21 +310,14 @@ fun EventItem(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
             ) {
-                FilledTonalButton(
-                    onClick = { onUpdate(event) },
-                    colors = ButtonDefaults.filledTonalButtonColors(
-                        containerColor = MaterialTheme.colorScheme.secondaryContainer
-                    )
-                ) {
+                TextButton(onClick = onEdit) {
                     Text("Edit")
                 }
-
                 Spacer(modifier = Modifier.width(8.dp))
-
-                FilledTonalButton(
-                    onClick = { onDelete(event) },
-                    colors = ButtonDefaults.filledTonalButtonColors(
-                        containerColor = MaterialTheme.colorScheme.errorContainer
+                TextButton(
+                    onClick = onDelete,
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = MaterialTheme.colorScheme.error
                     )
                 ) {
                     Text("Delete")
@@ -223,7 +326,8 @@ fun EventItem(
         }
     }
 }
+
 fun formatDateForDisplay(date: Date): String {
-    val dateFormat = SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault())
+    val dateFormat = SimpleDateFormat("EEE, MMM d • h:mm a", Locale.getDefault())
     return dateFormat.format(date)
 }
