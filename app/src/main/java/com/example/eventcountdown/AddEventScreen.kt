@@ -14,7 +14,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -28,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.wear.compose.material.ContentAlpha
 import coil.compose.rememberAsyncImagePainter
+import com.example.eventcountdown.ui.showDateTimePicker
 import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -81,12 +84,17 @@ fun AddEventScreen(navController: NavController, viewModel: EventViewModel) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Add New Event") },
+                title = {
+                    Text("Add New Event", color = MaterialTheme.colorScheme.onPrimary)
+                },
                 navigationIcon = {
-                    TextButton(onClick = { navController.popBackStack() }) {
-                        Text("Back")
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.onPrimary)
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary
+                )
             )
         },
         floatingActionButton = {
@@ -137,8 +145,8 @@ fun AddEventScreen(navController: NavController, viewModel: EventViewModel) {
             ) {
                 listOf(
                     Color(0xFF2962FF),
-                    Color(0xFF00BFA5),
-                    Color(0xFF6200EA),
+                    Color(0xFF00F863),
+                    Color(0xFFFDD835),
                     Color(0xFFFF6D00),
                     Color(0xFFD50000)
                 ).forEach { color ->
@@ -178,8 +186,13 @@ fun AddEventScreen(navController: NavController, viewModel: EventViewModel) {
             OutlinedTextField(
                 value = title,
                 onValueChange = { title = it },
-                label = { Text("Event Title") },
-                modifier = Modifier.fillMaxWidth()
+                label = { Text("Title") },
+                modifier = Modifier.fillMaxWidth(),
+                shape = MaterialTheme.shapes.large,
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                )
             )
 
             OutlinedTextField(
@@ -187,14 +200,28 @@ fun AddEventScreen(navController: NavController, viewModel: EventViewModel) {
                 onValueChange = { description = it },
                 label = { Text("Description") },
                 modifier = Modifier.fillMaxWidth(),
-                maxLines = 3
+                maxLines = 3,
+                shape = MaterialTheme.shapes.large,
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                )
             )
 
-            Button(
-                onClick = { datePicker.show() },
-                modifier = Modifier.fillMaxWidth()
+            FilledTonalButton(
+                onClick = {
+                    datePicker.show()
+                },
+                modifier = Modifier.fillMaxWidth(),
+                shape = MaterialTheme.shapes.large,
+                colors = ButtonDefaults.filledTonalButtonColors(
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                )
             ) {
-                Text("Select Date & Time")
+                Icon(Icons.Default.DateRange, contentDescription = "Pick Date")
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Edit Date & Time")
             }
 
             Text(
