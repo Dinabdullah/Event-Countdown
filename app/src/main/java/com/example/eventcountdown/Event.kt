@@ -15,9 +15,10 @@ data class Event(
     val description: String,
     val date: Date,
     val color: Int = Color.Blue.toArgb(),
+    val backgroundImageUri: String? = null
 ) {
     // Helper function to convert back to Color
     fun getColor(): Color {
         return Color(color)
     }
-}
+        fun getBackgroundColor(): Color = Color(color) }

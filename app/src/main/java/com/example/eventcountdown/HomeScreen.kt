@@ -65,13 +65,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
+import coil.compose.rememberImagePainter
 import com.example.eventcountdown.api.Holiday
 import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
@@ -367,7 +371,8 @@ fun HolidayCard(
                         )
                     }
 
-                    Surface(modifier = Modifier.height(60.dp),
+                    Surface(
+                        modifier = Modifier.height(60.dp),
                         shape = MaterialTheme.shapes.small,
                         color = when {
                             isPast -> MaterialTheme.colorScheme.errorContainer
@@ -533,12 +538,13 @@ private fun EventCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick),
+            .clickable(onClick = onClick)
+            .height(200.dp),
         colors = CardDefaults.cardColors(
             containerColor = if (isPastEvent) {
                 MaterialTheme.colorScheme.surfaceVariant
             } else {
-                MaterialTheme.colorScheme.surface
+                event.getBackgroundColor()
             }
         ),
         elevation = CardDefaults.cardElevation(
@@ -550,106 +556,128 @@ private fun EventCard(
             MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
         ) else null
     ) {
-        Column(
-            modifier = Modifier
-                .padding(16.dp)
-                .animateContentSize()
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(
-                        text = event.title,
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            fontWeight = FontWeight.SemiBold,
-                            color = if (isPastEvent) {
-                                MaterialTheme.colorScheme.onSurfaceVariant
-                            } else {
-                                MaterialTheme.colorScheme.primary
-                            }
-                        ),
-                        maxLines = 1
-                    )
+        Box(modifier = Modifier.fillMaxSize()) {
+            event.backgroundImageUri?.let { uri ->
 
-                    Spacer(modifier = Modifier.height(4.dp))
-
-                    Text(
-                        text = event.description,
-                        style = MaterialTheme.typography.bodyMedium.copy(
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        ),
-                        maxLines = 2
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Text(
-                        text = formatDateForDisplay(event.date),
-                        style = MaterialTheme.typography.labelMedium.copy(
-                            color = MaterialTheme.colorScheme.outline
-                        )
-                    )
-                }
-
-                Box(
-                    modifier = Modifier.size(72.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    if (!isPastEvent) {
-                        CircularProgressIndicator(
-                            progress = animatedProgress,
-                            modifier = Modifier.size(72.dp),
-                            strokeWidth = 6.dp,
-                            color = when {
-                                days < 1 -> MaterialTheme.colorScheme.error
-                                days < 3 -> MaterialTheme.colorScheme.primary
-                                else -> MaterialTheme.colorScheme.secondary
-                            },
-                            trackColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
-                        )
-                    }
-                    Text(
-                        text = timeText,
-                        style = MaterialTheme.typography.labelLarge.copy(
-                            fontWeight = FontWeight.Bold,
-                            color = if (isPastEvent) {
-                                MaterialTheme.colorScheme.onSurfaceVariant
-                            } else {
-                                MaterialTheme.colorScheme.onSurface
-                            }
-                        )
-                    )
-                }
+                Image(
+                    painter = rememberAsyncImagePainter(model = uri),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .alpha(0.4f)
+                )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxSize()
             ) {
-                TextButton(
-                    onClick = onEdit,
-                    colors = ButtonDefaults.textButtonColors(
-                        contentColor = MaterialTheme.colorScheme.primary
-                    ),
-                    shape = RoundedCornerShape(8.dp)
+
+                Column(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .animateContentSize()
                 ) {
-                    Text("Edit")
-                }
-                Spacer(modifier = Modifier.width(8.dp))
-                TextButton(
-                    onClick = onDelete,
-                    colors = ButtonDefaults.textButtonColors(
-                        contentColor = MaterialTheme.colorScheme.error
-                    ),
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Text("Delete")
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text(
+                                text = event.title,
+                                style = MaterialTheme.typography.titleLarge.copy(
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = if (isPastEvent) {
+                                        MaterialTheme.colorScheme.onSurfaceVariant
+                                    } else {
+                                        MaterialTheme.colorScheme.primary
+                                    }
+                                ),
+                                maxLines = 1
+                            )
+
+                            Spacer(modifier = Modifier.height(4.dp))
+
+                            Text(
+                                text = event.description,
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                ),
+                                maxLines = 2
+                            )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            Text(
+                                text = formatDateForDisplay(event.date),
+                                style = MaterialTheme.typography.labelMedium.copy(
+                                    color = MaterialTheme.colorScheme.outline
+                                )
+                            )
+                        }
+
+                        Box(
+                            modifier = Modifier.size(72.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            if (!isPastEvent) {
+                                CircularProgressIndicator(
+                                    progress = animatedProgress,
+                                    modifier = Modifier.size(72.dp),
+                                    strokeWidth = 6.dp,
+                                    color = when {
+                                        days < 1 -> MaterialTheme.colorScheme.error
+                                        days < 3 -> MaterialTheme.colorScheme.primary
+                                        else -> MaterialTheme.colorScheme.secondary
+                                    },
+                                    trackColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                                )
+                            }
+                            Text(
+                                text = timeText,
+                                style = MaterialTheme.typography.labelLarge.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (isPastEvent) {
+                                        MaterialTheme.colorScheme.onSurfaceVariant
+                                    } else {
+                                        MaterialTheme.colorScheme.onSurface
+                                    }
+                                )
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        TextButton(
+                            onClick = onEdit,
+                            colors = ButtonDefaults.textButtonColors(
+                                contentColor = MaterialTheme.colorScheme.primary
+                            ),
+                            shape = RoundedCornerShape(8.dp)
+                        ) {
+                            Text("Edit")
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        TextButton(
+                            onClick = onDelete,
+                            colors = ButtonDefaults.textButtonColors(
+                                contentColor = MaterialTheme.colorScheme.error
+                            ),
+                            shape = RoundedCornerShape(8.dp)
+                        ) {
+                            Text("Delete")
+                        }
+                    }
                 }
             }
         }

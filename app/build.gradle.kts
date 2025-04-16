@@ -59,6 +59,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.compose.material)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -88,5 +89,8 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation ("com.squareup.retrofit2:converter-gson:2.11.0")
     implementation ("com.github.bumptech.glide:glide:4.16.0")
+
+    implementation("io.coil-kt:coil-compose:2.4.0") // For image loading
+    implementation("com.github.skydoves:colorpicker-compose:1.0.0") // For advanced color picker
 
 }
