@@ -5,6 +5,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
@@ -184,15 +185,19 @@ class EventViewModel(
     }
 
 
-    private fun loadHolidays(year: Int = 2024, countryCode: String = "EG") {
+    private fun loadHolidays(year: Int = getCurrentYear(), countryCode: String = "EG") {
         viewModelScope.launch {
             try {
                 _holidays.value = holidayRepository.getHolidays(year, countryCode)
-                autoCreateHolidayEvents() // Auto-create after loading
+                autoCreateHolidayEvents()
             } catch (e: Exception) {
                 _error.value = "Holiday load failed: ${e.message}"
             }
         }
+    }
+
+    private fun getCurrentYear(): Int {
+        return Calendar.getInstance().get(Calendar.YEAR)
     }
 
     init {
