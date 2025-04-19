@@ -14,9 +14,8 @@ import androidx.room.Room
 import com.example.eventcountdown.data.local.AppDatabase
 import com.example.eventcountdown.data.remote.api.RetrofitClient
 import com.example.eventcountdown.data.repository.HolidayRepository
-import com.example.eventcountdown.presentation.EventViewModel
 import com.example.eventcountdown.presentation.navigation.EventNavigation
-import com.example.eventcountdown.ui.theme.EventCountdownTheme
+import com.example.eventcountdown.presentation.theme.EventCountdownTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

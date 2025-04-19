@@ -1,4 +1,4 @@
-package com.example.eventcountdown.presentation
+package com.example.eventcountdown.presentation.activity
 
 import android.app.Application
 import androidx.compose.ui.graphics.Color
@@ -13,7 +13,7 @@ import com.example.eventcountdown.data.remote.model.Holiday
 import com.example.eventcountdown.data.repository.HolidayRepository
 import com.example.eventcountdown.data.local.EventDao
 import com.example.eventcountdown.data.worker.EventNotificationWorker
-import com.example.eventcountdown.domain.model.Event
+import com.example.eventcountdown.data.local.Event
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

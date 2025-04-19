@@ -1,4 +1,4 @@
-package com.example.eventcountdown.domain.model
+package com.example.eventcountdown.data.local
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb

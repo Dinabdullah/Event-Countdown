@@ -11,7 +11,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.eventcountdown.presentation.screens.countdown.CountdownScreen
-import com.example.eventcountdown.presentation.EventViewModel
+import com.example.eventcountdown.presentation.activity.EventViewModel
 import com.example.eventcountdown.presentation.screens.updateevent.UpdateEventScreen
 import com.example.eventcountdown.presentation.screens.addevent.AddEventScreen
 import com.example.eventcountdown.presentation.screens.home.HomeScreen
