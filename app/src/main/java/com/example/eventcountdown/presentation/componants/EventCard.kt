@@ -91,7 +91,7 @@ fun EventCard(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .height(200.dp),
+            .height(220.dp),
         colors = CardDefaults.cardColors(
             containerColor = if (isPastEvent) {
                 MaterialTheme.colorScheme.surfaceVariant
@@ -125,7 +125,8 @@ fun EventCard(
             Column(
                 modifier = Modifier
                     .padding(16.dp)
-                    .fillMaxSize()
+                    .fillMaxSize(),
+                        verticalArrangement = Arrangement.SpaceBetween
             ) {
 
                 Column(
@@ -135,7 +136,7 @@ fun EventCard(
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
+                        horizontalArrangement = Arrangement.End
                     ) {
                         Column(
                             modifier = Modifier.weight(1f)
@@ -210,18 +211,24 @@ fun EventCard(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.End
                     ) {
-                        TextButton(
-                            onClick = onEdit,
-                            colors = ButtonDefaults.textButtonColors(
-                                contentColor = MaterialTheme.colorScheme.primary
-                            ),
-                            shape = RoundedCornerShape(8.dp)
-                        ) {
-                            Text("Edit")
+                        if (!isPastEvent) { // Only show Edit button for non-past events
+                            TextButton(
+                                onClick = onEdit,
+                                colors = ButtonDefaults.textButtonColors(
+                                    containerColor = MaterialTheme.colorScheme.surface,
+                                    contentColor = MaterialTheme.colorScheme.primary
+                                ),
+                                elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp),
+                                shape = RoundedCornerShape(8.dp),
+                                modifier = Modifier.height(36.dp)
+                            ) {
+                                Text("Edit", style = MaterialTheme.typography.labelLarge)
+                            }
+                            Spacer(modifier = Modifier.width(8.dp))
                         }
-                        Spacer(modifier = Modifier.width(8.dp))
                         TextButton(
                             onClick = onDelete,
+                            modifier = Modifier.padding(start = 4.dp),
                             colors = ButtonDefaults.textButtonColors(
                                 contentColor = MaterialTheme.colorScheme.error
                             ),
