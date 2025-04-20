@@ -8,6 +8,8 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,15 +42,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
 import com.example.eventcountdown.presentation.activity.EventViewModel
 import kotlinx.coroutines.delay
+import java.io.File
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -76,85 +85,121 @@ fun CountdownScreen(
     }
 
     val eventColor = remember { Color(event.color) }
+    val context = LocalContext.current
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(event.title, color = MaterialTheme.colorScheme.onSurface) },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(
-                            Icons.Default.ArrowBack,
-                            contentDescription = "Back",
-                            tint = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        // Background Image with blur effect
+        event.backgroundImageUri?.let { path ->
+            val imageFile = remember(path) { File(path) }
+            if (imageFile.exists()) {
+                Image(
+                    painter = rememberAsyncImagePainter(imageFile),
+                    contentDescription = "Event background",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .blur(radius = 4.dp),
+                    contentScale = ContentScale.Crop,
+                    alpha = 0.7f
                 )
-            )
+            }
         }
-    ) { padding ->
-        Column(
+
+        // Dark overlay for better text visibility
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
-                .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            // Event details
+                .background(Color.Black.copy(alpha = 0.4f))
+        )
+
+        Scaffold(
+            modifier = Modifier.fillMaxSize(),
+            topBar = {
+                TopAppBar(
+                    title = {
+                        Text(
+                            event.title,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.9f)
+                        )
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = { navController.popBackStack() }) {
+                            Icon(
+                                Icons.Default.ArrowBack,
+                                contentDescription = "Back",
+                                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.9f)
+                            )
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent,
+                        scrolledContainerColor = Color.Transparent
+                    )
+                )
+            },
+            containerColor = Color.Transparent
+        ) { padding ->
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp, vertical = 24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .fillMaxSize()
+                    .padding(padding)
+                    .verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
+                // Event details
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp, vertical = 24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = event.title,
+                        style = MaterialTheme.typography.headlineLarge,
+                        color = Color.White,
+                        textAlign = TextAlign.Center,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+
+                    Text(
+                        text = event.description,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Color.White.copy(alpha = 0.9f),
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+
+                    Text(
+                        text = formatFullDate(event.date),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.White.copy(alpha = 0.8f),
+                    )
+                }
+
+                // Time display
                 Text(
-                    text = event.title,
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = eventColor,
-                    textAlign = TextAlign.Center,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 8.dp)
+                    text = formatTime(event.date),
+                    style = MaterialTheme.typography.displaySmall,
+                    color = Color.White,
+                    modifier = Modifier.padding(top = 32.dp, bottom = 16.dp)
+
                 )
 
-                Text(
-                    text = event.description,
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-
-                Text(
-                    text = formatFullDate(event.date),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = eventColor,
-                )
+                // Countdown display
+                if (remainingTime.isNegative()) {
+                    Text(
+                        text = "Event has passed",
+                        fontSize = 18.sp,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(vertical = 16.dp)
+                    )
+                } else {
+                    CountdownDisplay(remainingTime, eventColor)
+                }
             }
-            // Time display
-            Text(
-                text = formatTime(event.date),
-                style = MaterialTheme.typography.displaySmall,
-                color = eventColor,
-                modifier = Modifier.padding(top = 32.dp, bottom = 16.dp)
-            )
-
-            // Countdown display
-            if (remainingTime.isNegative()) {
-                Text(
-                    text = "Event has passed",
-                    fontSize = 18.sp,
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.padding(vertical = 16.dp)
-                )
-            } else {
-                CountdownDisplay(remainingTime, eventColor)
-            }
-
-
         }
     }
 }
@@ -164,7 +209,6 @@ fun CountdownDisplay(
     duration: TimeRemaining,
     color: Color,
 ) {
-    // Rolling circle animation state
     val infiniteTransition = rememberInfiniteTransition()
     val rollingPosition by infiniteTransition.animateFloat(
         initialValue = 0f,
@@ -182,15 +226,13 @@ fun CountdownDisplay(
     ) {
         Box(
             contentAlignment = Alignment.Center,
-            modifier = Modifier.size(220.dp) // Increased size to accommodate rolling circle
+            modifier = Modifier.size(220.dp)
         ) {
-            // Main countdown progress
             val progress by animateFloatAsState(
                 targetValue = duration.progress(),
                 animationSpec = tween(1000, easing = LinearEasing)
             )
 
-            // Background track
             CircularProgressIndicator(
                 progress = 1f,
                 modifier = Modifier.size(200.dp),
@@ -198,7 +240,6 @@ fun CountdownDisplay(
                 color = color.copy(alpha = 0.2f)
             )
 
-            // Main progress
             CircularProgressIndicator(
                 progress = progress,
                 modifier = Modifier.size(200.dp),
@@ -206,11 +247,9 @@ fun CountdownDisplay(
                 color = color
             )
 
-            // Rolling circle (rotating around the main circle)
             Canvas(modifier = Modifier.fillMaxSize()) {
                 val radius = 100.dp.toPx()
-                val angle =
-                    (rollingPosition * 360f) * (Math.PI.toFloat() / 180f) // Proper angle conversion
+                val angle = (rollingPosition * 360f) * (Math.PI.toFloat() / 180f)
                 val x = radius * cos(angle) + center.x
                 val y = radius * sin(angle) + center.y
 
@@ -221,24 +260,24 @@ fun CountdownDisplay(
                 )
             }
 
-            // Time display
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
                     text = "${duration.days}d ${duration.hours}h",
                     style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
                 )
                 Text(
                     text = "${duration.minutes}m ${duration.seconds}s",
                     style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
                 )
             }
         }
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Time unit breakdown
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly
@@ -302,19 +341,20 @@ fun CountdownUnit(
             Text(
                 text = value.toString().padStart(2, '0'),
                 style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = Color.White
             )
         }
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = unit,
             style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+            color = Color.White.copy(alpha = 0.8f)
         )
     }
 }
 
-// Helper functions
+// Helper functions remain the same
 fun formatTime(date: Date): String {
     val calendar = Calendar.getInstance()
     calendar.time = date

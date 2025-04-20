@@ -2,6 +2,7 @@ package com.example.eventcountdown.presentation.screens.addevent
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.Context
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -33,6 +34,10 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.eventcountdown.data.local.Event
 import com.example.eventcountdown.presentation.activity.EventViewModel
 import java.util.*
+import android.net.Uri
+import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -48,7 +53,10 @@ fun AddEventScreen(navController: NavController, viewModel: EventViewModel) {
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
-        uri?.let { backgroundImageUri = it.toString() }
+        uri?.let {
+            val savedUri = saveImageToInternalStorage(context, uri)
+            backgroundImageUri = savedUri
+        }
     }
 
     val isFormValid = title.isNotBlank() && selectedDate != null
@@ -145,11 +153,13 @@ fun AddEventScreen(navController: NavController, viewModel: EventViewModel) {
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 listOf(
-                    Color(0xFF2962FF),
-                    Color(0xFF00F863),
-                    Color(0xFFFDD835),
-                    Color(0xFFFF6D00),
-                    Color(0xFFD50000)
+                    Color(0xFF16358A),
+                    Color(0xFF3C945F),
+                    Color(0xFFD8C46D),
+                    Color(0xFFE77F32),
+                    Color(0xFFA52222),
+                    Color(0xFF6949AA),
+                    Color(0xFFC03E6E),
                 ).forEach { color ->
                     Box(
                         modifier = Modifier
@@ -233,4 +243,24 @@ fun AddEventScreen(navController: NavController, viewModel: EventViewModel) {
             )
         }
     }
+}
+
+fun saveImageToInternalStorage(context: Context, uri: Uri): String {
+    val contentResolver = context.contentResolver
+    val directory = File(context.filesDir, "event_images")
+    if (!directory.exists()) {
+        directory.mkdirs()
+    }
+
+    val inputStream: InputStream? = contentResolver.openInputStream(uri)
+    val fileName = "event_${System.currentTimeMillis()}.jpg"
+    val file = File(directory, fileName)
+
+    inputStream?.use { input ->
+        FileOutputStream(file).use { output ->
+            input.copyTo(output)
+        }
+    }
+
+    return file.absolutePath
 }

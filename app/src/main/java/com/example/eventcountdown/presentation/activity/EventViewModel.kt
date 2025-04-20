@@ -80,7 +80,6 @@ class EventViewModel(
         }
     }
 
-
     private val _holidays = MutableStateFlow<List<Holiday>>(emptyList())
     val holidays: StateFlow<List<Holiday>> = _holidays.asStateFlow()
 
