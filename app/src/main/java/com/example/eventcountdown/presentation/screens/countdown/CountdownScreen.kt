@@ -106,7 +106,6 @@ fun CountdownScreen(
             }
         }
 
-        // Dark overlay for better text visibility
         Box(
             modifier = Modifier
                 .fillMaxSize()

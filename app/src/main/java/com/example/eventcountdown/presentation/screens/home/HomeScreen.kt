@@ -56,9 +56,6 @@ fun HomeScreen(navController: NavController, viewModel: EventViewModel) {
     }
 
     val scrollState = rememberLazyListState()
-    val fabVisible by remember {
-        derivedStateOf { scrollState.firstVisibleItemIndex == 0 }
-    }
 
     Scaffold(
         topBar = {
@@ -81,7 +78,6 @@ fun HomeScreen(navController: NavController, viewModel: EventViewModel) {
 
             FloatingActionButton(
                 onClick = { navController.navigate("addEvent") },
-                containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary,
                 modifier = Modifier
                     .padding(16.dp)
