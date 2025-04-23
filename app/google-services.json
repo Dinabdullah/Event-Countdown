@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "613602753809",
+    "project_id": "event-countdown-191f7",
+    "storage_bucket": "event-countdown-191f7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:613602753809:android:abf1fa15f0f375f4d620b0",
+        "android_client_info": {
+          "package_name": "com.example.eventcountdown"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAlLVMzGH3SX3qBOBAANoJFheGCs3PwVWw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
