@@ -1,6 +1,7 @@
 package com.example.eventcountdown.presentation.activity
 
 import android.app.Application
+import android.util.Log
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.AndroidViewModel
@@ -21,6 +22,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
@@ -121,29 +123,34 @@ class EventViewModel(
     private fun scheduleNotification(event: Event) {
         val currentTime = System.currentTimeMillis()
         val eventTime = event.date.time
+        val delay = eventTime - currentTime
 
-        // Only schedule if event is in the future
+        Log.d("NotificationDebug", "Attempting to schedule notification for event: ${event.id}")
+        Log.d("NotificationDebug", "Current time: $currentTime, Event time: $eventTime, Delay: $delay ms")
+
         if (eventTime > currentTime) {
-            val delay = eventTime - currentTime
-
             val inputData = workDataOf(
                 "EVENT_ID" to event.id,
                 "EVENT_TITLE" to event.title
             )
 
+            Log.d("NotificationDebug", "Creating work request with data: $inputData")
+
             val notificationWork = OneTimeWorkRequestBuilder<EventNotificationWorker>()
-                .setInputData(workDataOf("EVENT_ID" to event.id))
-                .setInitialDelay(delay, TimeUnit.MILLISECONDS)
                 .setInputData(inputData)
+                .setInitialDelay(delay, TimeUnit.MILLISECONDS)
                 .addTag("event_notification_${event.id}")
                 .build()
 
-            WorkManager.getInstance(getApplication())
-                .enqueueUniqueWork(
-                    "event_notification_${event.id}",
-                    ExistingWorkPolicy.REPLACE,
-                    notificationWork
-                )
+            WorkManager.getInstance(getApplication()).enqueueUniqueWork(
+                "event_notification_${event.id}",
+                ExistingWorkPolicy.REPLACE,
+                notificationWork
+            )
+
+            Log.d("NotificationDebug", "Work enqueued with ID: ${notificationWork.id}")
+        } else {
+            Log.d("NotificationDebug", "Event time is in the past, not scheduling")
         }
     }
 
@@ -202,6 +209,20 @@ class EventViewModel(
     init {
         loadEvents()
         loadHolidays()
+    }
+
+    fun testNotification() {
+        viewModelScope.launch {
+            val testEvent = Event(
+                title = "Test Event",
+                description = "Test Notification",
+                date = Date(System.currentTimeMillis() + 5000), // 5 seconds from now
+                color = Color.Blue.toArgb()
+            )
+
+            Log.d("NotificationDebug", "Scheduling test notification")
+            scheduleNotification(testEvent)
+        }
     }
 
 }

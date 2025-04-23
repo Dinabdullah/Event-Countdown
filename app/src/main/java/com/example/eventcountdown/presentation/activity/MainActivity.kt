@@ -4,6 +4,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,6 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.room.Room
+import androidx.work.WorkManager
 import com.example.eventcountdown.data.local.AppDatabase
 import com.example.eventcountdown.data.remote.api.RetrofitClient
 import com.example.eventcountdown.data.repository.HolidayRepository
@@ -20,6 +22,9 @@ import com.example.eventcountdown.presentation.theme.EventCountdownTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val workManager = WorkManager.getInstance(this)
+        Log.d("NotificationDebug", "WorkManager initialized: $workManager")
 
         val db = Room.databaseBuilder(
             applicationContext,

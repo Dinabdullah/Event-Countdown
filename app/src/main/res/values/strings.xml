@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Event Countdown</string>
+    <string name="app_name">Eventat</string>
     <string name="onboarding_desc1">Track  and manage your events</string>
     <string name="onboarding_desc2">Stay Organized</string>
     <string name="onboarding_desc3">Get Notified When event happens</string>
