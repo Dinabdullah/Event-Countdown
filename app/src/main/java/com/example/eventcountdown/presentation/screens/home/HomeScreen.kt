@@ -10,11 +10,13 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -41,7 +43,11 @@ import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navController: NavController, viewModel: EventViewModel) {
+fun HomeScreen(
+    navController: NavController, 
+    viewModel: EventViewModel,
+    onSignOut: () -> Unit = {}
+) {
     val events by viewModel.events.collectAsState()
     val holidays by viewModel.holidays.collectAsState()
     val now = remember { System.currentTimeMillis() }
@@ -71,11 +77,18 @@ fun HomeScreen(navController: NavController, viewModel: EventViewModel) {
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp)
-                )
+                ),
+                actions = {
+                    IconButton(onClick = onSignOut) {
+                        Icon(
+                            imageVector = Icons.Default.ExitToApp,
+                            contentDescription = "Sign Out"
+                        )
+                    }
+                }
             )
         },
         floatingActionButton = {
-
             FloatingActionButton(
                 onClick = { navController.navigate("addEvent") },
                 contentColor = MaterialTheme.colorScheme.onPrimary,

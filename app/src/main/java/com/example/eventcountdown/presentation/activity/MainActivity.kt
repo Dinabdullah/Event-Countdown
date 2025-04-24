@@ -16,12 +16,29 @@ import androidx.work.WorkManager
 import com.example.eventcountdown.data.local.AppDatabase
 import com.example.eventcountdown.data.remote.api.RetrofitClient
 import com.example.eventcountdown.data.repository.HolidayRepository
+import com.example.eventcountdown.presentation.auth.AuthViewModel
 import com.example.eventcountdown.presentation.navigation.EventNavigation
 import com.example.eventcountdown.presentation.theme.EventCountdownTheme
+import com.google.firebase.FirebaseApp
+import com.google.firebase.FirebaseOptions
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Initialize Firebase with explicit options
+        try {
+            if (FirebaseApp.getApps(this).isEmpty()) {
+                val options = FirebaseOptions.Builder()
+                    .setProjectId("event-countdown-191f7")
+                    .setApplicationId("1:613602753809:android:abf1fa15f0f375f4d620b0")
+                    .setApiKey("AIzaSyAlLVMzGH3SX3qBOBAANoJFheGCs3PwVWw")
+                    .build()
+                FirebaseApp.initializeApp(this, options)
+            }
+        } catch (e: Exception) {
+            Log.e("Firebase", "Error initializing Firebase: ${e.message}")
+        }
 
         val workManager = WorkManager.getInstance(this)
         Log.d("NotificationDebug", "WorkManager initialized: $workManager")
@@ -39,19 +56,21 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val holidayRepository = HolidayRepository(RetrofitClient.api)
+                    val eventViewModel = EventViewModel(
+                        application = application,
+                        eventDao = db.eventDao(),
+                        holidayRepository = holidayRepository
+                    )
+                    val authViewModel = AuthViewModel(application)
                     EventNavigation(
-                        EventViewModel(
-                            application = application,
-                            eventDao = db.eventDao(),
-                            holidayRepository = holidayRepository
-                        )
+                        authViewModel = authViewModel,
+                        eventViewModel = eventViewModel
                     )
                 }
             }
         }
         requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 100)
         createNotificationChannel()
-
     }
 
     private fun createNotificationChannel() {
