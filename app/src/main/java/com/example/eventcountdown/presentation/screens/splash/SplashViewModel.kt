@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class SplashViewModel(
-    private val preferencesHelper: PreferencesHelper
+    private val prefsHelper: PreferencesHelper
 ) : ViewModel() {
     private val _isLoading = MutableStateFlow(true)
     val isLoading = _isLoading.asStateFlow()
@@ -22,7 +22,7 @@ class SplashViewModel(
         viewModelScope.launch {
             delay(3000)
             _isLoading.value = false
-            _shouldShowOnboarding.value = !preferencesHelper.isOnboardingComplete
+            _shouldShowOnboarding.value = !prefsHelper.onboardingCompleted
         }
     }
 

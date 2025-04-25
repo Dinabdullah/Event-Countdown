@@ -24,7 +24,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
@@ -34,34 +33,55 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.eventcountdown.R
+import com.example.eventcountdown.presentation.auth.AuthState
+import com.example.eventcountdown.presentation.screens.onBoarding.PreferencesHelper
 import kotlinx.coroutines.delay
 
 @Composable
-fun SplashScreen(viewModel: SplashViewModel, navController: NavController) {
-    val shouldShowOnboarding by viewModel.shouldShowOnboarding.collectAsState()
+fun SplashScreen(
+    authState: AuthState,
+    prefsHelper: PreferencesHelper,
+    onNavigate: (String) -> Unit
+) {
+    // Animation states
+    var hourglassVisible by remember { mutableStateOf(false) }
+    var textVisible by remember { mutableStateOf(false) }
+    val viewModel: SplashViewModel = viewModel(factory = object : ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            return SplashViewModel(prefsHelper) as T
+        }
+    })
+
     val isLoading by viewModel.isLoading.collectAsState()
 
-    // Corrected LaunchedEffect to depend on both isLoading and shouldShowOnboarding
-    LaunchedEffect(isLoading, shouldShowOnboarding) {
+    LaunchedEffect(isLoading) {
         if (!isLoading) {
-            if (shouldShowOnboarding) {
-                navController.navigate("onboarding") {
-                    popUpTo("splash") { inclusive = true }
+            when (authState) {
+                is AuthState.Authenticated -> {
+                    if (prefsHelper.onboardingCompleted) {
+                        onNavigate("home")
+                    } else {
+                        onNavigate("onboarding")
+                    }
                 }
-            } else {
-                navController.navigate("home") {
-                    popUpTo("splash") { inclusive = true }
+
+                else -> {
+                    onNavigate("login")
                 }
             }
         }
     }
-    // Animation states
-    var hourglassVisible by remember { mutableStateOf(false) }
-    var textVisible by remember { mutableStateOf(false) }
-    var contentVisible by remember { mutableStateOf(false) }
 
+    // Animation controls
+    LaunchedEffect(Unit) {
+        hourglassVisible = true
+        delay(800)
+        textVisible = true
+    }
 
     // Hourglass animation
     val hourglassRotation by animateFloatAsState(
@@ -77,37 +97,12 @@ fun SplashScreen(viewModel: SplashViewModel, navController: NavController) {
         label = "textScale"
     )
 
-    LaunchedEffect(Unit) {
-        hourglassVisible = true
-        delay(800)
-        textVisible = true
-    }
-
-    LaunchedEffect(isLoading) {
-        if (!isLoading) {
-            delay(1500)
-            contentVisible = true
-
-            if (shouldShowOnboarding) {
-                navController.navigate("onboarding") {
-                    popUpTo("splash") { inclusive = true }
-                }
-            } else {
-                navController.navigate("home") {
-                    popUpTo("splash") { inclusive = true }
-                }
-            }
-        }
-    }
-
     val gradientColors = listOf(Color(0xFF2962FF), Color(0xFF87CEEB))
 
-    // UI Content
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Brush.verticalGradient(gradientColors))
-            .alpha(if (contentVisible) 0f else 1f),
+            .background(Brush.verticalGradient(gradientColors)),
         contentAlignment = Alignment.Center
     ) {
         Column(

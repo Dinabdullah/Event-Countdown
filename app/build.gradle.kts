@@ -62,7 +62,6 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.compose.material)
     implementation(libs.androidx.benchmark.macro)
-    implementation(libs.transport.api)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -3,75 +3,141 @@ package com.example.eventcountdown.presentation.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.navigation.NavHostController
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.eventcountdown.presentation.activity.EventViewModel
-import com.example.eventcountdown.presentation.auth.AuthState
 import com.example.eventcountdown.presentation.auth.AuthViewModel
 import com.example.eventcountdown.presentation.auth.ForgotPasswordScreen
 import com.example.eventcountdown.presentation.auth.LoginScreen
 import com.example.eventcountdown.presentation.auth.SignupScreen
+import com.example.eventcountdown.presentation.screens.addevent.AddEventScreen
+import com.example.eventcountdown.presentation.screens.countdown.CountdownScreen
 import com.example.eventcountdown.presentation.screens.home.HomeScreen
-
-sealed class Screen(val route: String) {
-    object Login : Screen("login")
-    object SignUp : Screen("signup")
-    object ForgotPassword : Screen("forgot_password")
-    object Home : Screen("home")
-}
+import com.example.eventcountdown.presentation.screens.onBoarding.OnboardingPager
+import com.example.eventcountdown.presentation.screens.onBoarding.PreferencesHelper
+import com.example.eventcountdown.presentation.screens.splash.SplashScreen
+import com.example.eventcountdown.presentation.screens.updateevent.UpdateEventScreen
 
 @Composable
 fun EventNavigation(
     authViewModel: AuthViewModel,
-    eventViewModel: EventViewModel,
-    navController: NavHostController = rememberNavController()
+    eventViewModel: EventViewModel
 ) {
-    val authState by authViewModel.authState.collectAsState()
+    val navController = rememberNavController()
+    val context = LocalContext.current
+    val prefsHelper = remember { PreferencesHelper(context) }
 
     NavHost(
         navController = navController,
-        startDestination = when (authState) {
-            is AuthState.Authenticated -> Screen.Home.route
-            else -> Screen.Login.route
-        }
+        startDestination = "splash"
     ) {
-        composable(Screen.Login.route) {
+        composable("splash") {
+            val authState by authViewModel.authState.collectAsState()
+            SplashScreen(
+                authState = authState,
+                prefsHelper = prefsHelper,
+                onNavigate = { destination ->
+                    navController.navigate(destination) {
+                        popUpTo("splash") { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        composable("onboarding") {
+            OnboardingPager(
+                onFinish = {
+                    navController.navigate("home") {
+                        popUpTo("onboarding") { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        composable("login") {
             LoginScreen(
-                onNavigateToSignUp = { navController.navigate(Screen.SignUp.route) },
-                onNavigateToMain = { navController.navigate(Screen.Home.route) },
-                onNavigateToForgotPassword = { navController.navigate(Screen.ForgotPassword.route) },
+                onNavigateToSignUp = { navController.navigate("signup") },
+                onNavigateToMain = {
+                    if (prefsHelper.onboardingCompleted) {
+                        navController.navigate("home") {
+                            popUpTo("login") { inclusive = true }
+                        }
+                    } else {
+                        navController.navigate("onboarding") {
+                            popUpTo("login") { inclusive = true }
+                        }
+                    }
+                },
+                onNavigateToForgotPassword = { navController.navigate("forgot_password") },
                 viewModel = authViewModel
             )
         }
 
-        composable(Screen.SignUp.route) {
+        composable("signup") {
             SignupScreen(
-                onNavigateToLogin = { navController.navigate(Screen.Login.route) },
-                onNavigateToMain = { navController.navigate(Screen.Home.route) },
+                onNavigateToLogin = { navController.navigate("login") },
+                onNavigateToMain = {
+                    if (prefsHelper.onboardingCompleted) {
+                        navController.navigate("home") {
+                            popUpTo("signup") { inclusive = true }
+                        }
+                    } else {
+                        navController.navigate("onboarding") {
+                            popUpTo("signup") { inclusive = true }
+                        }
+                    }
+                },
                 viewModel = authViewModel
             )
         }
 
-        composable(Screen.ForgotPassword.route) {
+        composable("forgot_password") {
             ForgotPasswordScreen(
-                onNavigateBack = { navController.navigateUp() },
+                onNavigateBack = { navController.popBackStack() },
                 viewModel = authViewModel
             )
         }
 
-        composable(Screen.Home.route) {
+        composable("home") {
             HomeScreen(
                 navController = navController,
                 viewModel = eventViewModel,
                 onSignOut = {
                     authViewModel.signOut()
-                    navController.navigate(Screen.Login.route) {
-                        popUpTo(Screen.Home.route) { inclusive = true }
+                    navController.navigate("login") {
+                        popUpTo("home") { inclusive = true }
                     }
                 }
             )
         }
+
+        composable("addEvent") {
+            AddEventScreen(navController, eventViewModel)
+        }
+
+        composable("updateEvent/{eventId}") { backStackEntry ->
+            val eventId = backStackEntry.arguments?.getString("eventId")?.toIntOrNull()
+            eventId?.let {
+                UpdateEventScreen(
+                    eventId = it,
+                    navController = navController,
+                    viewModel = eventViewModel
+                )
+            }
+        }
+
+        composable("countdownEvent/{eventId}") { backStackEntry ->
+            val eventId = backStackEntry.arguments?.getString("eventId")?.toIntOrNull()
+            eventId?.let {
+                CountdownScreen(
+                    eventId = it,
+                    navController = navController,
+                    viewModel = eventViewModel
+                )
+            }
+        }
     }
-} 
+}
