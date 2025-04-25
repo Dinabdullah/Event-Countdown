@@ -272,7 +272,7 @@ fun EventCard(
                                         containerColor = Color.Red.copy(0.9f)
                                     ),
                                     elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp),
-                                    shape = RoundedCornerShape(8.dp),
+                                    shape = RoundedCornerShape(24.dp),
 
                                     ) {
                                     Icon(
