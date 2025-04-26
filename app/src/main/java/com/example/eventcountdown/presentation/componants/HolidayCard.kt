@@ -30,8 +30,10 @@ import androidx.compose.ui.unit.dp
 import com.example.eventcountdown.R
 import com.example.eventcountdown.data.remote.model.Holiday
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+
 @Composable
 fun HolidayCard(
     holiday: Holiday,
@@ -44,9 +46,20 @@ fun HolidayCard(
         }.getOrElse { Date() }
     }
 
-    val eventTime = parsedDate.time
-    val isPast = eventTime <= currentTime
-    val isToday = !isPast && (eventTime - currentTime) < 86400000
+    val currentMidnightTime = remember(currentTime) {
+        Calendar.getInstance().apply {
+            timeInMillis = currentTime
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }.timeInMillis
+    }
+
+    val eventMidnightTime = parsedDate.time
+
+    val isPast = eventMidnightTime < currentMidnightTime
+    val isToday = eventMidnightTime == currentMidnightTime
 
     val elevation by animateDpAsState(
         targetValue = if (isToday) 8.dp else 4.dp,
