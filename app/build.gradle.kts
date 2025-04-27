@@ -100,4 +100,12 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
+
+    // Navigation Drawer
+    implementation ("androidx.compose.material3:material3:1.1.1")
+    implementation ("androidx.compose.material:material-icons-extended:1.5.4")
+
+    // Settings
+    implementation ("androidx.datastore:datastore-preferences:1.0.0")
+    implementation ("androidx.lifecycle:lifecycle-runtime-compose:2.6.0")
 }

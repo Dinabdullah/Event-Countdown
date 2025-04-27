@@ -1,5 +1,6 @@
 package com.example.eventcountdown.presentation.navigation
 
+import AppSettings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -18,6 +19,7 @@ import com.example.eventcountdown.presentation.screens.countdown.CountdownScreen
 import com.example.eventcountdown.presentation.screens.home.HomeScreen
 import com.example.eventcountdown.presentation.screens.onBoarding.OnboardingPager
 import com.example.eventcountdown.presentation.screens.onBoarding.PreferencesHelper
+import com.example.eventcountdown.presentation.screens.settings.SettingsScreen
 import com.example.eventcountdown.presentation.screens.splash.SplashScreen
 import com.example.eventcountdown.presentation.screens.updateevent.UpdateEventScreen
 
@@ -113,6 +115,19 @@ fun EventNavigation(
                 }
             )
         }
+
+        composable("settings") {
+            SettingsScreen(
+                navController = navController,
+                settings = AppSettings(
+                    themePreference    = prefsHelper.getTheme(),          // your getter
+                    languagePreference = prefsHelper.getLanguage(),       // your getter
+                    updateTheme        = { prefsHelper.setTheme(it) },    // your setter
+                    updateLanguage     = { prefsHelper.setLanguage(it) }  // your setter
+                )
+            )
+        }
+
 
         composable("addEvent") {
             AddEventScreen(navController, eventViewModel)
