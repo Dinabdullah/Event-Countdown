@@ -110,7 +110,7 @@ fun SplashScreen(
             verticalArrangement = Arrangement.Center
         ) {
             Image(
-                painter = painterResource(id = R.drawable.hour_glass),
+                painter = painterResource(id = R.drawable.hour),
                 contentDescription = "App Logo",
                 modifier = Modifier
                     .size(120.dp)
@@ -121,7 +121,7 @@ fun SplashScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "Eventat",
+                text = "Eventaty",
                 style = MaterialTheme.typography.headlineLarge.copy(
                     fontWeight = FontWeight.ExtraBold,
                     color = MaterialTheme.colorScheme.onPrimaryContainer

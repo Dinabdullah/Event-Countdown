@@ -153,13 +153,13 @@ fun AddEventScreen(navController: NavController, viewModel: EventViewModel) {
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 listOf(
-                    Color(0xFF16358A),
-                    Color(0xFF3C945F),
-                    Color(0xFFD8C46D),
-                    Color(0xFFE77F32),
-                    Color(0xFFA52222),
-                    Color(0xFF6949AA),
-                    Color(0xFFC03E6E),
+                    Color(0xFF474E93),
+                    Color(0xFF16C47F),
+                    Color(0xFFFFD65A),
+                    Color(0xFFFF9D23),
+                    Color(0xFFF93827),
+                    Color(0xFF69247C),
+                    Color(0xFFDA498D),
                 ).forEach { color ->
                     Box(
                         modifier = Modifier

@@ -6,6 +6,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -31,7 +33,9 @@ fun ForgotPasswordScreen(
         Text(
             text = "Reset Password",
             style = MaterialTheme.typography.headlineLarge,
-            color = MaterialTheme.colorScheme.primary
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF0118D8)
+
         )
 
         Spacer(modifier = Modifier.height(32.dp))
@@ -39,21 +43,16 @@ fun ForgotPasswordScreen(
         Text(
             text = "Enter your email address and we'll send you a link to reset your password.",
             style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurface
+            color = Color(0xFF0C0950)
         )
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        OutlinedTextField(
+        CustomTextField(
+            label = "Email",
             value = email,
             onValueChange = { email = it },
-            label = { Text("Email") },
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Email,
-                imeAction = ImeAction.Done
-            ),
-            modifier = Modifier.fillMaxWidth()
+            contentDescription = "Email"
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -72,6 +71,10 @@ fun ForgotPasswordScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF0118D8),
+                contentColor = Color.White
+            ),
             enabled = !isLoading
         ) {
             if (isLoading) {
@@ -105,7 +108,8 @@ fun ForgotPasswordScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         TextButton(onClick = onNavigateBack) {
-            Text("Back to Login")
+            Text("Back to Login",
+                color = Color(0xFF1B56FD))
         }
     }
 

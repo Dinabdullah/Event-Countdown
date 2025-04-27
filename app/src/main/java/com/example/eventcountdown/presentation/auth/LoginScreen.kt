@@ -6,6 +6,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -20,7 +23,7 @@ fun LoginScreen(
     onNavigateToSignUp: () -> Unit,
     onNavigateToMain: () -> Unit,
     onNavigateToForgotPassword: () -> Unit,
-    viewModel: AuthViewModel = viewModel()
+    viewModel: AuthViewModel = viewModel(),
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -39,45 +42,38 @@ fun LoginScreen(
         Text(
             text = "Welcome Back",
             style = MaterialTheme.typography.headlineLarge,
-            color = MaterialTheme.colorScheme.primary
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF0118D8)
         )
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        OutlinedTextField(
+        CustomTextField(
+            label = "Email",
             value = email,
             onValueChange = { email = it },
-            label = { Text("Email") },
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Email,
-                imeAction = ImeAction.Next
-            ),
-            modifier = Modifier.fillMaxWidth()
+            contentDescription = "Email"
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        OutlinedTextField(
+        PasswordTextField(
             value = password,
             onValueChange = { password = it },
-            label = { Text("Password") },
-            singleLine = true,
-            visualTransformation = PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Password,
-                imeAction = ImeAction.Done
-            ),
-            modifier = Modifier.fillMaxWidth()
+            label = "Enter Password",
         )
-
         Spacer(modifier = Modifier.height(8.dp))
 
         TextButton(
             onClick = onNavigateToForgotPassword,
             modifier = Modifier.align(Alignment.End)
         ) {
-            Text("Forgot Password?")
+            Text(
+                "Forgot Password?",
+                style = TextStyle(
+                    color = Color(0xFF0118D8)
+                )
+            )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -104,6 +100,10 @@ fun LoginScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF0118D8),
+                contentColor = Color.White
+            ),
             enabled = !isLoading && email.isNotBlank() && password.isNotBlank()
         ) {
             if (isLoading) {
@@ -134,7 +134,12 @@ fun LoginScreen(
         ) {
             Text("Don't have an account?")
             TextButton(onClick = onNavigateToSignUp) {
-                Text("Sign Up")
+                Text(
+                    "Sign Up",
+                    style = TextStyle(
+                        color = Color(0xFF0118D8)
+                    )
+                )
             }
         }
     }
