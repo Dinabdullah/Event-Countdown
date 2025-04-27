@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">ايڤنتات</string>
+    <string name="onboarding_desc1">قم بتتبع وإدارة أحداثك</string>
+    <string name="onboarding_desc2">ابق منظمًا</string>
+    <string name="onboarding_desc3">احصل على إشعار عند حدوث الحدث</string>
+    <string name="light_theme">الوضع الفاتح</string>
+    <string name="dark_theme">الوضع الداكن</string>
+    <string name="language">اللغة العربية</string>
+</resources>
