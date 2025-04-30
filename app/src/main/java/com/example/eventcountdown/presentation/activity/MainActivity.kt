@@ -26,7 +26,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Initialize Firebase with explicit options
+        // تهيئة Firebase
         try {
             if (FirebaseApp.getApps(this).isEmpty()) {
                 val options = FirebaseOptions.Builder()
@@ -40,21 +40,25 @@ class MainActivity : ComponentActivity() {
             Log.e("Firebase", "Error initializing Firebase: ${e.message}")
         }
 
+        // WorkManager
         val workManager = WorkManager.getInstance(this)
         Log.d("NotificationDebug", "WorkManager initialized: $workManager")
 
+        // قاعدة البيانات
         val db = Room.databaseBuilder(
             applicationContext,
             AppDatabase::class.java,
             "event_database.db"
         ).fallbackToDestructiveMigration().build()
 
+        // واجهة المستخدم
         setContent {
             EventCountdownTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
+                    // إنشاء الـ ViewModels
                     val holidayRepository = HolidayRepository(RetrofitClient.api)
                     val eventViewModel = EventViewModel(
                         application = application,
@@ -62,6 +66,8 @@ class MainActivity : ComponentActivity() {
                         holidayRepository = holidayRepository
                     )
                     val authViewModel = AuthViewModel(application)
+
+                    // التنقل بين الشاشات
                     EventNavigation(
                         authViewModel = authViewModel,
                         eventViewModel = eventViewModel
@@ -69,6 +75,8 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+
+        // الصلاحيات والقناة الخاصة بالإشعارات
         requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 100)
         createNotificationChannel()
     }

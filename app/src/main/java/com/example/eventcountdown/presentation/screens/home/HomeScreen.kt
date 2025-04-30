@@ -2,14 +2,7 @@ package com.example.eventcountdown.presentation.screens.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -18,33 +11,8 @@ import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
-import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalDrawerSheet
-import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.NavigationDrawerItem
-import androidx.compose.material3.NavigationDrawerItemDefaults
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberDrawerState
-import androidx.compose.material3.surfaceColorAtElevation
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -87,13 +55,12 @@ fun HomeScreen(
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            ModalDrawerSheet{
+            ModalDrawerSheet {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
                         .background(MaterialTheme.colorScheme.surface)
                 ) {
-                    // Drawer Header
                     Box(
                         modifier = Modifier
                             .background(MaterialTheme.colorScheme.primary)
@@ -108,10 +75,9 @@ fun HomeScreen(
                         )
                     }
 
-                    // Navigation Items
                     NavigationDrawerItem(
                         label = { Text("Home") },
-                        icon  = { Icon(Icons.Default.Home, contentDescription = null) },
+                        icon = { Icon(Icons.Default.Home, contentDescription = null) },
                         selected = false,
                         onClick = {
                             scope.launch { drawerState.close() }
@@ -121,20 +87,35 @@ fun HomeScreen(
                     )
 
                     NavigationDrawerItem(
-                        label    = { Text("Settings") },
-                        icon     = { Icon(Icons.Default.Settings, contentDescription = null) },
+                        label = { Text("Settings") },
+                        icon = { Icon(Icons.Default.Settings, contentDescription = null) },
                         selected = false,
-                        onClick  = {
+                        onClick = {
                             scope.launch { drawerState.close() }
                             navController.navigate("settings")
                         },
                         modifier = Modifier.padding(vertical = 8.dp)
                     )
 
+                    NavigationDrawerItem(
+                        label = { Text("About Us") },
+                        icon = {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_about_us),
+                                contentDescription = null
+                            )
+                        },
+                        selected = false,
+                        onClick = {
+                            scope.launch { drawerState.close() }
+                            navController.navigate("about")
+                        },
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
 
                     NavigationDrawerItem(
                         label = { Text("Sign Out") },
-                        icon  = { Icon(Icons.Default.ExitToApp, contentDescription = null) },
+                        icon = { Icon(Icons.Default.ExitToApp, contentDescription = null) },
                         selected = false,
                         onClick = {
                             scope.launch { drawerState.close() }
@@ -142,7 +123,7 @@ fun HomeScreen(
                         },
                         colors = NavigationDrawerItemDefaults.colors(
                             unselectedContainerColor = MaterialTheme.colorScheme.surface,
-                            unselectedTextColor      = MaterialTheme.colorScheme.error
+                            unselectedTextColor = MaterialTheme.colorScheme.error
                         ),
                         modifier = Modifier.padding(vertical = 8.dp)
                     )
@@ -165,13 +146,13 @@ fun HomeScreen(
                         }
                     },
                     title = {
-                            Text(
-                                text = "Eventat",
-                                style = MaterialTheme.typography.headlineSmall.copy(
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.primary,
-                                )
+                        Text(
+                            text = "Eventat",
+                            style = MaterialTheme.typography.headlineSmall.copy(
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary,
                             )
+                        )
                     },
                     colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                         containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp)

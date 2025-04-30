@@ -14,6 +14,7 @@ import com.example.eventcountdown.presentation.auth.AuthViewModel
 import com.example.eventcountdown.presentation.auth.ForgotPasswordScreen
 import com.example.eventcountdown.presentation.auth.LoginScreen
 import com.example.eventcountdown.presentation.auth.SignupScreen
+import com.example.eventcountdown.presentation.screens.about.AboutScreen
 import com.example.eventcountdown.presentation.screens.addevent.AddEventScreen
 import com.example.eventcountdown.presentation.screens.countdown.CountdownScreen
 import com.example.eventcountdown.presentation.screens.home.HomeScreen
@@ -120,14 +121,17 @@ fun EventNavigation(
             SettingsScreen(
                 navController = navController,
                 settings = AppSettings(
-                    themePreference    = prefsHelper.getTheme(),          // your getter
-                    languagePreference = prefsHelper.getLanguage(),       // your getter
-                    updateTheme        = { prefsHelper.setTheme(it) },    // your setter
-                    updateLanguage     = { prefsHelper.setLanguage(it) }  // your setter
+                    themePreference = prefsHelper.getTheme(),
+                    languagePreference = prefsHelper.getLanguage(),
+                    updateTheme = { prefsHelper.setTheme(it) },
+                    updateLanguage = { prefsHelper.setLanguage(it) }
                 )
             )
         }
 
+        composable("about") {
+            AboutScreen()
+        }
 
         composable("addEvent") {
             AddEventScreen(navController, eventViewModel)
