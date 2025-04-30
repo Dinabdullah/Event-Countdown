@@ -116,7 +116,7 @@ private fun LanguageOptions(
     current: String,
     onSelect: (String) -> Unit
 ) {
-    val languages = listOf("English", "Arabic")
+    val languages = listOf("English", "العربيه")
 
     languages.forEach { language ->
         Row(

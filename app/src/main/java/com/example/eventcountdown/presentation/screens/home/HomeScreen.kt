@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
@@ -113,18 +114,15 @@ fun HomeScreen(
                         modifier = Modifier.padding(vertical = 8.dp)
                     )
 
+                    // Inside the ModalDrawerSheet in HomeScreen
                     NavigationDrawerItem(
-                        label = { Text("Sign Out") },
-                        icon = { Icon(Icons.Default.ExitToApp, contentDescription = null) },
+                        label = { Text("Past Events") },
+                        icon = { Icon(Icons.Default.Check, contentDescription = null) },
                         selected = false,
                         onClick = {
                             scope.launch { drawerState.close() }
-                            onSignOut()
+                            navController.navigate("pastEvents")
                         },
-                        colors = NavigationDrawerItemDefaults.colors(
-                            unselectedContainerColor = MaterialTheme.colorScheme.surface,
-                            unselectedTextColor = MaterialTheme.colorScheme.error
-                        ),
                         modifier = Modifier.padding(vertical = 8.dp)
                     )
                 }

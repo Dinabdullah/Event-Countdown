@@ -19,7 +19,7 @@ import com.example.eventcountdown.data.local.Event
 import com.example.eventcountdown.data.remote.model.Holiday
 
 @Composable
- fun CombinedEventList(
+fun CombinedEventList(
     events: List<Event>,
     holidays: List<Holiday>,
     currentTime: Long,
@@ -32,9 +32,6 @@ import com.example.eventcountdown.data.remote.model.Holiday
     val upcomingEvents = remember(events, currentTime) {
         events.filter { it.date.time > currentTime }.sortedBy { it.date.time }
     }
-    val pastEvents = remember(events, currentTime) {
-        events.filter { it.date.time <= currentTime }.sortedByDescending { it.date.time }
-    }
 
     LazyColumn(
         state = scrollState,
@@ -42,7 +39,6 @@ import com.example.eventcountdown.data.remote.model.Holiday
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Horizontal Scrollable Holidays Section
         if (holidays.isNotEmpty()) {
             item {
                 Column {
@@ -65,24 +61,9 @@ import com.example.eventcountdown.data.remote.model.Holiday
             }
         }
 
-        // Upcoming Events Section
         if (upcomingEvents.isNotEmpty()) {
             item { SectionHeader("Your Upcoming Events (${upcomingEvents.size})") }
             items(upcomingEvents, key = { it.id }) { event ->
-                AnimatedEventCard(
-                    event = event,
-                    currentTime = currentTime,
-                    onClick = { onEventClick(event) },
-                    onEdit = { onEdit(event) },
-                    onDelete = { onDelete(event) }
-                )
-            }
-        }
-
-        // Past Events Section
-        if (pastEvents.isNotEmpty()) {
-            item { SectionHeader("Past Events (${pastEvents.size})") }
-            items(pastEvents, key = { it.id }) { event ->
                 AnimatedEventCard(
                     event = event,
                     currentTime = currentTime,

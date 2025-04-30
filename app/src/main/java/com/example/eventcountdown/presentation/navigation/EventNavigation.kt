@@ -14,6 +14,7 @@ import com.example.eventcountdown.presentation.auth.AuthViewModel
 import com.example.eventcountdown.presentation.auth.ForgotPasswordScreen
 import com.example.eventcountdown.presentation.auth.LoginScreen
 import com.example.eventcountdown.presentation.auth.SignupScreen
+import com.example.eventcountdown.presentation.screens.PastEventsScreen
 import com.example.eventcountdown.presentation.screens.about.AboutScreen
 import com.example.eventcountdown.presentation.screens.addevent.AddEventScreen
 import com.example.eventcountdown.presentation.screens.countdown.CountdownScreen
@@ -126,6 +127,14 @@ fun EventNavigation(
                     updateTheme = { prefsHelper.setTheme(it) },
                     updateLanguage = { prefsHelper.setLanguage(it) }
                 )
+            )
+        }
+
+
+        composable("pastEvents") {
+            PastEventsScreen(
+                navController = navController,
+                viewModel = eventViewModel
             )
         }
 
