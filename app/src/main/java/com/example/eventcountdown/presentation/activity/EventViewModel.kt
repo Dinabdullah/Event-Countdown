@@ -67,7 +67,7 @@ class EventViewModel(
                             title = holiday.name,
                             description = "Public Holiday: ${holiday.localName}",
                             date = date,
-                            color = Color.Green.toArgb() // Different color for holidays
+                            color = Color.Blue.copy(0.7f).toArgb() // Different color for holidays
                         )
                         eventDao.insert(event)
                     }

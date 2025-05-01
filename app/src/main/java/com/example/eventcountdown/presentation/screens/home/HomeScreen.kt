@@ -8,7 +8,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Settings
@@ -69,7 +68,7 @@ fun HomeScreen(
                             .padding(24.dp)
                     ) {
                         Text(
-                            "Eventat",
+                            "Eventaty",
                             fontSize = 20.sp,
                             color = MaterialTheme.colorScheme.onPrimary,
                             fontWeight = FontWeight.Bold
@@ -145,7 +144,7 @@ fun HomeScreen(
                     },
                     title = {
                         Text(
-                            text = "Eventat",
+                            text = "Eventaty",
                             style = MaterialTheme.typography.headlineSmall.copy(
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.primary,

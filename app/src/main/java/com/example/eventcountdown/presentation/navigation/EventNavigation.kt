@@ -139,7 +139,7 @@ fun EventNavigation(
         }
 
         composable("about") {
-            AboutScreen()
+            AboutScreen(navController)
         }
 
         composable("addEvent") {

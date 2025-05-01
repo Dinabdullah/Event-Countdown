@@ -1,15 +1,26 @@
 package com.example.eventcountdown.presentation.screens.about
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 
 @Composable
-fun AboutScreen() {
+fun AboutScreen(navController: NavController) {
+    Row (
+        modifier = Modifier.padding(top = 8.dp),
+        horizontalArrangement = Arrangement.Start
+    ){
+        IconButton(onClick = { navController.popBackStack() }) {
+            Icon(Icons.Default.ArrowBack, "Back")
+        }
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -17,6 +28,7 @@ fun AboutScreen() {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
         Text(
             text = "About Us",
             style = MaterialTheme.typography.headlineMedium
