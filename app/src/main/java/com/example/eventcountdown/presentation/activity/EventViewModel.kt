@@ -2,6 +2,8 @@ package com.example.eventcountdown.presentation.activity
 
 import android.app.Application
 import android.util.Log
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.AndroidViewModel
@@ -32,6 +34,13 @@ class EventViewModel(
     private val holidayRepository: HolidayRepository
 ) : AndroidViewModel(application) {
 
+
+    // Theme state management
+    private val _isDarkTheme = mutableStateOf(false)
+    val isDarkTheme: State<Boolean> = _isDarkTheme
+    fun toggleTheme() {
+        _isDarkTheme.value = !_isDarkTheme.value
+    }
 
     private val _isAddingHolidays = MutableStateFlow(false)
     val isAddingHolidays: StateFlow<Boolean> = _isAddingHolidays.asStateFlow()

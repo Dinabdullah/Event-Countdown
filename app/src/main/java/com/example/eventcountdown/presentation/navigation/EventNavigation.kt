@@ -1,6 +1,5 @@
 package com.example.eventcountdown.presentation.navigation
 
-import AppSettings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -24,6 +23,7 @@ import com.example.eventcountdown.presentation.screens.onBoarding.PreferencesHel
 import com.example.eventcountdown.presentation.screens.settings.SettingsScreen
 import com.example.eventcountdown.presentation.screens.splash.SplashScreen
 import com.example.eventcountdown.presentation.screens.updateevent.UpdateEventScreen
+import com.example.eventcountdown.presentation.theme.AppSettings
 
 @Composable
 fun EventNavigation(

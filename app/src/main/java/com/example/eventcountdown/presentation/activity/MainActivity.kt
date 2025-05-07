@@ -10,6 +10,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.room.Room
 import androidx.work.WorkManager
@@ -19,6 +20,9 @@ import com.example.eventcountdown.data.repository.HolidayRepository
 import com.example.eventcountdown.presentation.auth.AuthViewModel
 import com.example.eventcountdown.presentation.navigation.EventNavigation
 import com.example.eventcountdown.presentation.theme.EventCountdownTheme
+import com.example.eventcountdown.presentation.theme.SettingsRepository
+import com.example.eventcountdown.presentation.theme.ThemePreference
+import com.example.eventcountdown.presentation.theme.rememberAppSettings
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
 
@@ -53,7 +57,12 @@ class MainActivity : ComponentActivity() {
 
         // واجهة المستخدم
         setContent {
-            EventCountdownTheme {
+            val repository = remember { SettingsRepository(applicationContext) }
+            val appSettings = rememberAppSettings(repository)
+            val themePref = appSettings.themePreference
+
+
+            EventCountdownTheme(themePreference = appSettings.themePreference) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background

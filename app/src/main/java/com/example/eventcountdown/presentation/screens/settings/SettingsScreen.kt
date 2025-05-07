@@ -1,6 +1,5 @@
 package com.example.eventcountdown.presentation.screens.settings
 
-import AppSettings
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.icons.Icons
@@ -16,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.eventcountdown.presentation.theme.AppSettings
 import com.example.eventcountdown.presentation.theme.ThemePreference
 
 @OptIn(ExperimentalMaterial3Api::class)
