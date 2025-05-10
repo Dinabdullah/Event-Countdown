@@ -20,8 +20,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.eventcountdown.R
 import com.example.eventcountdown.presentation.activity.EventViewModel
 import com.example.eventcountdown.presentation.componants.PastEventsList
 import kotlinx.coroutines.delay
@@ -48,7 +50,7 @@ fun PastEventsScreen(
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("Past Events") },
+                title = { Text(text = stringResource(id = R.string.past_events)) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.Default.ArrowBack, "Back")

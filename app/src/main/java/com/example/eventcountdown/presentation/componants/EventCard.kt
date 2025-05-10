@@ -42,9 +42,11 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
+import com.example.eventcountdown.R
 import com.example.eventcountdown.data.local.Event
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -258,7 +260,7 @@ fun EventCard(
                                             contentDescription = "Edit",
                                             modifier = Modifier.size(20.dp)
                                         )
-                                        Text(text = "Edit")
+                                        Text(text = stringResource(id = R.string.event_card_label_1))
                                     }
                                     Spacer(modifier = Modifier.width(8.dp))
                                 }
@@ -280,7 +282,7 @@ fun EventCard(
                                         contentDescription = "Delete",
                                         modifier = Modifier.size(20.dp)
                                     )
-                                    Text(text = "Delete")
+                                    Text(text = stringResource(id = R.string.event_card_label_2))
                                 }
                             }
                         }

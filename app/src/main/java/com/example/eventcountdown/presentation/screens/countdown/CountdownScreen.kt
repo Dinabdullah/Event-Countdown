@@ -48,6 +48,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -55,6 +56,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
+import com.example.eventcountdown.R
 import com.example.eventcountdown.presentation.activity.EventViewModel
 import kotlinx.coroutines.delay
 import java.io.File
@@ -190,7 +192,7 @@ fun CountdownScreen(
                 // Countdown display
                 if (remainingTime.isNegative()) {
                     Text(
-                        text = "Event has passed",
+                        text = stringResource(id = R.string.passed_event),
                         fontSize = 18.sp,
                         color = MaterialTheme.colorScheme.error,
                         modifier = Modifier.padding(vertical = 16.dp)
@@ -283,25 +285,25 @@ fun CountdownDisplay(
         ) {
             CountdownUnit(
                 value = duration.days,
-                unit = "DAYS",
+                unit = stringResource(id = R.string.days),
                 color = color,
                 totalValue = duration.days + 1
             )
             CountdownUnit(
                 value = duration.hours,
-                unit = "HOURS",
+                unit = stringResource(id = R.string.hours),
                 color = color,
                 totalValue = 24
             )
             CountdownUnit(
                 value = duration.minutes,
-                unit = "MINUTES",
+                unit = stringResource(id = R.string.minutes),
                 color = color,
                 totalValue = 60
             )
             CountdownUnit(
                 value = duration.seconds,
-                unit = "SECONDS",
+                unit = stringResource(id = R.string.seconds),
                 color = color,
                 totalValue = 60
             )

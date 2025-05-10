@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -68,7 +69,7 @@ fun HomeScreen(
                             .padding(24.dp)
                     ) {
                         Text(
-                            "Eventaty",
+                            text = stringResource(id = R.string.app_name),
                             fontSize = 20.sp,
                             color = MaterialTheme.colorScheme.onPrimary,
                             fontWeight = FontWeight.Bold
@@ -76,7 +77,7 @@ fun HomeScreen(
                     }
 
                     NavigationDrawerItem(
-                        label = { Text("Home") },
+                        label = { Text(text = stringResource(id = R.string.nav_drawer_label_1)) },
                         icon = { Icon(Icons.Default.Home, contentDescription = null) },
                         selected = false,
                         onClick = {
@@ -87,7 +88,7 @@ fun HomeScreen(
                     )
 
                     NavigationDrawerItem(
-                        label = { Text("Settings") },
+                        label = { Text(text = stringResource(id = R.string.nav_drawer_label_2)) },
                         icon = { Icon(Icons.Default.Settings, contentDescription = null) },
                         selected = false,
                         onClick = {
@@ -97,8 +98,20 @@ fun HomeScreen(
                         modifier = Modifier.padding(vertical = 8.dp)
                     )
 
+                    // Inside the ModalDrawerSheet in HomeScreen
                     NavigationDrawerItem(
-                        label = { Text("About Us") },
+                        label = { Text(text = stringResource(id = R.string.nav_drawer_label_3),) },
+                        icon = { Icon(Icons.Default.Check, contentDescription = null) },
+                        selected = false,
+                        onClick = {
+                            scope.launch { drawerState.close() }
+                            navController.navigate("pastEvents")
+                        },
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+
+                    NavigationDrawerItem(
+                        label = { Text(text = stringResource(id = R.string.nav_drawer_label_4)) },
                         icon = {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_about_us),
@@ -109,18 +122,6 @@ fun HomeScreen(
                         onClick = {
                             scope.launch { drawerState.close() }
                             navController.navigate("about")
-                        },
-                        modifier = Modifier.padding(vertical = 8.dp)
-                    )
-
-                    // Inside the ModalDrawerSheet in HomeScreen
-                    NavigationDrawerItem(
-                        label = { Text("Past Events") },
-                        icon = { Icon(Icons.Default.Check, contentDescription = null) },
-                        selected = false,
-                        onClick = {
-                            scope.launch { drawerState.close() }
-                            navController.navigate("pastEvents")
                         },
                         modifier = Modifier.padding(vertical = 8.dp)
                     )
@@ -144,7 +145,7 @@ fun HomeScreen(
                     },
                     title = {
                         Text(
-                            text = "Eventaty",
+                            text = stringResource(id = R.string.app_name),
                             style = MaterialTheme.typography.headlineSmall.copy(
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.primary,

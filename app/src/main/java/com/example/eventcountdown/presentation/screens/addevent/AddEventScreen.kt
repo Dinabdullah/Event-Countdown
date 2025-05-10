@@ -35,6 +35,8 @@ import com.example.eventcountdown.data.local.Event
 import com.example.eventcountdown.presentation.activity.EventViewModel
 import java.util.*
 import android.net.Uri
+import androidx.compose.ui.res.stringResource
+import com.example.eventcountdown.R
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
@@ -60,6 +62,7 @@ fun AddEventScreen(navController: NavController, viewModel: EventViewModel) {
     }
 
     val isFormValid = title.isNotBlank() && selectedDate != null
+    val toastText = stringResource(id = R.string.add_toast)
 
     val datePicker = DatePickerDialog(
         context,
@@ -73,7 +76,7 @@ fun AddEventScreen(navController: NavController, viewModel: EventViewModel) {
                     } else {
                         Toast.makeText(
                             context,
-                            "Please select a future date and time",
+                            "$toastText",
                             Toast.LENGTH_SHORT
                         ).show()
                     }
@@ -94,7 +97,7 @@ fun AddEventScreen(navController: NavController, viewModel: EventViewModel) {
         topBar = {
             TopAppBar(
                 title = {
-                    Text("Add New Event", color = MaterialTheme.colorScheme.onPrimary)
+                    Text(text = stringResource(R.string.add_new_event), color = MaterialTheme.colorScheme.onPrimary)
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
@@ -147,7 +150,7 @@ fun AddEventScreen(navController: NavController, viewModel: EventViewModel) {
                 .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text("Select Event Color", style = MaterialTheme.typography.labelLarge)
+            Text(text = stringResource(R.string.select_event_color), style = MaterialTheme.typography.labelLarge)
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
@@ -179,7 +182,7 @@ fun AddEventScreen(navController: NavController, viewModel: EventViewModel) {
                 onClick = { launcher.launch("image/*") },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Select Background Image")
+                Text(text = stringResource(R.string.select_background_image))
             }
 
             backgroundImageUri?.let {
@@ -197,7 +200,7 @@ fun AddEventScreen(navController: NavController, viewModel: EventViewModel) {
             OutlinedTextField(
                 value = title,
                 onValueChange = { title = it },
-                label = { Text("Title") },
+                label = { Text(text = stringResource(R.string.title)) },
                 modifier = Modifier.fillMaxWidth(),
                 shape = MaterialTheme.shapes.large,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -209,7 +212,7 @@ fun AddEventScreen(navController: NavController, viewModel: EventViewModel) {
             OutlinedTextField(
                 value = description,
                 onValueChange = { description = it },
-                label = { Text("Description") },
+                label = { Text(text = stringResource(R.string.desc)) },
                 modifier = Modifier.fillMaxWidth(),
                 maxLines = 3,
                 shape = MaterialTheme.shapes.large,
@@ -232,13 +235,13 @@ fun AddEventScreen(navController: NavController, viewModel: EventViewModel) {
             ) {
                 Icon(Icons.Default.DateRange, contentDescription = "Pick Date")
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Edit Date & Time")
+                Text(text = stringResource(R.string.edit_date_time))
             }
 
             Text(
                 text = selectedDate?.let {
-                    "Selected: ${it}"
-                } ?: "No date selected",
+                    "${stringResource(R.string.selected)}: ${it}"
+                } ?: stringResource(R.string.non_selected),
                 color = if (selectedDate?.before(Date()) == true) Color.Red else Color.Unspecified
             )
         }

@@ -1,9 +1,58 @@
 <resources>
     <string name="app_name">Eventaty</string>
+    // onboarding
     <string name="onboarding_desc1">Track and manage your events</string>
     <string name="onboarding_desc2">Stay Organized</string>
     <string name="onboarding_desc3">Get Notified When event happens</string>
+    // settings
+    <string name="settings_label">Settings</string>
+    <string name="theme_label">Theme</string>
+    <string name="language_label">Language</string>
     <string name="light_theme">Light theme</string>
     <string name="dark_theme">Dark theme</string>
+    <string name="system_theme">System</string>
     <string name="language">English\n</string>
+    // home
+    <string name="public_holiday">Public Holidays</string>
+    <string name="upcoming_events">Your Upcoming Events</string>
+    // nav drawer
+    <string name="nav_drawer_label_1">Home</string>
+    <string name="nav_drawer_label_2">Settings</string>
+    <string name="nav_drawer_label_3">Past Events</string>
+    <string name="nav_drawer_label_4">About Us</string>
+    // event card
+    <string name="event_card_label_1">Edit</string>
+    <string name="event_card_label_2">Delete</string>
+
+    // add event
+    <string name="add_new_event">Add New Event</string>
+    <string name="select_event_color">Select Event Color</string>
+    <string name="select_background_image">Select Background Image</string>
+    <string name="title">Title</string>
+    <string name="desc">Description</string>
+    <string name="edit_date_time">Edit Date &amp; Time</string>
+    <string name="selected">Selected</string>
+    <string name="non_selected">No Date Selected</string>
+    <string name="add_toast">Please select a future date and time</string>
+
+    // about us
+    <string name="about_us_desc">"Event Countdown App helps you track important events in your life.\n\n"
+                    "Developed by DEPI students using Kotlin, Jetpack Compose, and Firebase.\n\n"
+                    "Under the supervision of Instructor and Mentor Ahmed Atef."</string>
+
+    // update event
+    <string name="update_event">Update Event</string>
+    <string name="edit_event">Edit Event</string>
+    <string name="save_changes">Save Changes</string>
+
+    // countdown
+    <string name="days">DAYS</string>
+    <string name="hours">HOURS</string>
+    <string name="minutes">MINUTES</string>
+    <string name="seconds">SECONDS</string>
+    <string name="passed_event">Event has passed</string>
+
+    // past event
+    <string name="past_events">Past Events</string>
+
 </resources>

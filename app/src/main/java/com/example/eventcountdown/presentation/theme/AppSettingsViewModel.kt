@@ -17,6 +17,7 @@ class AppSettingsViewModel(
         viewModelScope, SharingStarted.Eagerly, "English"
     )
 
+
     fun updateTheme(theme: ThemePreference) {
         viewModelScope.launch {
             repository.updateTheme(theme)
@@ -28,4 +29,6 @@ class AppSettingsViewModel(
             repository.updateLanguage(language)
         }
     }
+
+
 }

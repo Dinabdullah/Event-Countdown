@@ -24,11 +24,13 @@ import com.example.eventcountdown.presentation.screens.settings.SettingsScreen
 import com.example.eventcountdown.presentation.screens.splash.SplashScreen
 import com.example.eventcountdown.presentation.screens.updateevent.UpdateEventScreen
 import com.example.eventcountdown.presentation.theme.AppSettings
+import com.example.eventcountdown.presentation.theme.AppSettingsViewModel
 
 @Composable
 fun EventNavigation(
     authViewModel: AuthViewModel,
-    eventViewModel: EventViewModel
+    eventViewModel: EventViewModel,
+    appSettingsViewModel: AppSettingsViewModel
 ) {
     val navController = rememberNavController()
     val context = LocalContext.current
@@ -119,13 +121,15 @@ fun EventNavigation(
         }
 
         composable("settings") {
+            val themePref by appSettingsViewModel.themePreference.collectAsState()
+            val languagePref by appSettingsViewModel.languagePreference.collectAsState()
             SettingsScreen(
                 navController = navController,
                 settings = AppSettings(
-                    themePreference = prefsHelper.getTheme(),
-                    languagePreference = prefsHelper.getLanguage(),
-                    updateTheme = { prefsHelper.setTheme(it) },
-                    updateLanguage = { prefsHelper.setLanguage(it) }
+                    themePreference = themePref,
+                    languagePreference = languagePref,
+                    updateTheme = { appSettingsViewModel.updateTheme(it) },
+                    updateLanguage = { appSettingsViewModel.updateLanguage(it) }
                 )
             )
         }

@@ -7,9 +7,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.eventcountdown.R
 
 @Composable
 fun AboutScreen(navController: NavController) {
@@ -30,17 +32,15 @@ fun AboutScreen(navController: NavController) {
     ) {
 
         Text(
-            text = "About Us",
+            text = stringResource(id = R.string.nav_drawer_label_4),
             style = MaterialTheme.typography.headlineMedium
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(32.dp))
 
         Text(
-            text = "Event Countdown App helps you track important events in your life.\n\n" +
-                    "Developed by DEPI students using Kotlin, Jetpack Compose, and Firebase.\n\n" +
-                    "Under the supervision of Instructor and Mentor Ahmed Atef.",
-            fontSize = 18.sp
+            text = stringResource(id = R.string.about_us_desc),
+            fontSize = 16.sp
         )
     }
 }

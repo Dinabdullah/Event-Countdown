@@ -2,6 +2,7 @@ package com.example.eventcountdown.presentation.theme
 
 import android.content.Context
 import androidx.compose.runtime.Stable
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -15,6 +16,7 @@ class SettingsRepository(private val context: Context) {
     companion object {
         private val THEME_KEY = stringPreferencesKey("theme_preference")
         private val LANGUAGE_KEY = stringPreferencesKey("language_preference")
+        private val ONBOARDING_COMPLETED_KEY = booleanPreferencesKey("onboarding_completed")
     }
 
     val themePreferenceFlow: Flow<ThemePreference> = context.dataStore.data
@@ -31,6 +33,11 @@ class SettingsRepository(private val context: Context) {
             preferences[LANGUAGE_KEY] ?: "English"
         }
 
+    val onboardingCompletedFlow: Flow<Boolean> = context.dataStore.data
+        .map { preferences ->
+            preferences[ONBOARDING_COMPLETED_KEY] ?: false
+        }
+
     suspend fun updateTheme(preference: ThemePreference) {
         context.dataStore.edit { preferences ->
             preferences[THEME_KEY] = preference.name
@@ -42,6 +49,12 @@ class SettingsRepository(private val context: Context) {
             preferences[LANGUAGE_KEY] = language
         }
     }
+
+    suspend fun setOnboardingCompleted(completed: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[ONBOARDING_COMPLETED_KEY] = completed
+        }
+    }
 }
 
 @Stable
@@ -51,4 +64,3 @@ data class AppSettings(
     val updateTheme: (ThemePreference) -> Unit,
     val updateLanguage: (String) -> Unit
 )
-

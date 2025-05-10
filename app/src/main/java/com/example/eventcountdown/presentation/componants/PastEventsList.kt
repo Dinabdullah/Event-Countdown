@@ -7,7 +7,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.eventcountdown.R
 import com.example.eventcountdown.data.local.Event
 
 
@@ -27,7 +29,7 @@ fun PastEventsList(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         if (pastEvents.isNotEmpty()) {
-            item { SectionHeader("Past Events (${pastEvents.size})") }
+            item { SectionHeader("${stringResource(id = R.string.past_events)} (${pastEvents.size})") }
             items(pastEvents, key = { it.id }) { event ->
                 AnimatedEventCard(
                     event = event,

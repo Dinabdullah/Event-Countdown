@@ -35,9 +35,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.eventcountdown.R
 import com.example.eventcountdown.presentation.activity.EventViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -71,7 +73,7 @@ fun UpdateEventScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text("Update Event", color = MaterialTheme.colorScheme.onPrimary)
+                    Text(text = stringResource(id = R.string.update_event), color = MaterialTheme.colorScheme.onPrimary)
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
@@ -97,7 +99,7 @@ fun UpdateEventScreen(
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             Text(
-                text = "Edit your event",
+                text = stringResource(id = R.string.edit_event),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onBackground
@@ -106,7 +108,7 @@ fun UpdateEventScreen(
             OutlinedTextField(
                 value = title,
                 onValueChange = { title = it },
-                label = { Text("Title") },
+                label = { Text(text = stringResource(id = R.string.title)) },
                 modifier = Modifier.fillMaxWidth(),
                 shape = MaterialTheme.shapes.large,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -118,7 +120,7 @@ fun UpdateEventScreen(
             OutlinedTextField(
                 value = description,
                 onValueChange = { description = it },
-                label = { Text("Description") },
+                label = { Text(text = stringResource(id = R.string.desc)) },
                 modifier = Modifier.fillMaxWidth(),
                 shape = MaterialTheme.shapes.large,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -142,11 +144,11 @@ fun UpdateEventScreen(
             ) {
                 Icon(Icons.Default.DateRange, contentDescription = "Pick Date")
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Edit Date & Time")
+                Text(text = stringResource(id = R.string.edit_date_time))
             }
 
             Text(
-                text = "Selected: ${formatter.format(date)}",
+                text = "${stringResource(id = R.string.selected)}: ${formatter.format(date)}",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.primary
             )
@@ -176,7 +178,7 @@ fun UpdateEventScreen(
                 )
             ) {
                 Text(
-                    "Save Changes",
+                    text = stringResource(id = R.string.save_changes),
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.Bold
                 )

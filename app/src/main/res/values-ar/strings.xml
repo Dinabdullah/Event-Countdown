@@ -1,9 +1,63 @@
 <resources>
-    <string name="app_name">ايڤنتات</string>
+    <string name="app_name">ايڤنتاتي</string>
+
+    // onboarding
     <string name="onboarding_desc1">قم بتتبع وإدارة أحداثك</string>
     <string name="onboarding_desc2">ابق منظمًا</string>
     <string name="onboarding_desc3">احصل على إشعار عند حدوث الحدث</string>
-    <string name="light_theme">الوضع الفاتح</string>
-    <string name="dark_theme">الوضع الداكن</string>
+
+    // settings
+    <string name="settings_label">الإعدادات</string>
+    <string name="theme_label">الثيم</string>
+    <string name="language_label">اللغة</string>
+    <string name="light_theme">الثيم الفاتح</string>
+    <string name="dark_theme">الثيم الداكن</string>
+    <string name="system_theme">ثيم النظام</string>
     <string name="language">اللغة العربية</string>
+
+    // home
+    <string name="public_holiday">الإجازات العامة</string>
+    <string name="upcoming_events">أحداثك القادمة</string>
+
+    // nav drawer
+    <string name="nav_drawer_label_1">الرئيسية</string>
+    <string name="nav_drawer_label_2">الإعدادات</string>
+    <string name="nav_drawer_label_3">الأحداث السابقة</string>
+    <string name="nav_drawer_label_4">عنا</string>
+
+    // event card
+    <string name="event_card_label_1">تعديل</string>
+    <string name="event_card_label_2">حذف</string>
+
+    // add event
+    <string name="add_new_event">أضف حدث جديد</string>
+    <string name="select_event_color">اختر لون الحدث</string>
+    <string name="select_background_image">اختر صورة الخلفية</string>
+    <string name="title">العنوان</string>
+    <string name="desc">الوصف</string>
+    <string name="edit_date_time">قم بتعديل التاريخ والوقت</string>
+    <string name="selected">الوقت المحدد</string>
+    <string name="non_selected">لا يوجد وقت محدد</string>
+    <string name="add_toast">من فضلك قم بإختيار تاريخ و وقت في المستقبل</string>
+
+    // about us
+    <string name="about_us_desc">"يساعدك تطبيق العد التنازلي للأحداث على تتبع الأحداث المهمة في حياتك.\n\n"
+                    "تم تطويره من قبل طلاب رواد مصر الرقمية باستخدام Kotlin و Jetpack Compose و Firebase.\n\n"
+                    "تحت إشراف المدرب والمرشد أحمد عاطف."</string>
+
+    // update event
+    <string name="update_event">تحديث الحدث</string>
+    <string name="edit_event">تعديل الحدث</string>
+    <string name="save_changes">حفظ التغييرات</string>
+
+    // countdown
+    <string name="days">أيام</string>
+    <string name="hours">ساعات</string>
+    <string name="minutes">دقائق</string>
+    <string name="seconds">ثواني</string>
+    <string name="passed_event">لقد انتهى الحدث</string>
+
+    // past event
+    <string name="past_events">الأحداث السابقة</string>
+
 </resources>

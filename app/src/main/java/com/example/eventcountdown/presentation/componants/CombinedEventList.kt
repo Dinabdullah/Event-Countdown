@@ -32,10 +32,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.ExperimentalWearMaterialApi
 import androidx.wear.compose.material.rememberSwipeableState
+import com.example.eventcountdown.R
 import com.example.eventcountdown.data.local.Event
 import com.example.eventcountdown.data.remote.model.Holiday
 import kotlinx.coroutines.delay
@@ -65,7 +67,7 @@ fun CombinedEventList(
         if (holidays.isNotEmpty()) {
             item {
                 Column {
-                    SectionHeader("Public Holidays (${holidays.size})")
+                    SectionHeader("${stringResource(id = R.string.public_holiday)} (${holidays.size})")
                     Spacer(modifier = Modifier.height(8.dp))
                     LazyRow(
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -85,7 +87,7 @@ fun CombinedEventList(
         }
 
         if (upcomingEvents.isNotEmpty()) {
-            item { SectionHeader("Your Upcoming Events (${upcomingEvents.size})") }
+            item { SectionHeader("${stringResource(id = R.string.upcoming_events)} (${upcomingEvents.size})") }
             items(upcomingEvents, key = { it.id }) { event ->
                 AnimatedEventCard(
                     event = event,
