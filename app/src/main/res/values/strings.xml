@@ -20,6 +20,7 @@
     <string name="nav_drawer_label_2">Settings</string>
     <string name="nav_drawer_label_3">Past Events</string>
     <string name="nav_drawer_label_4">About Us</string>
+    <string name="nav_drawer_label_5">Sign Out</string>
     // event card
     <string name="event_card_label_1">Edit</string>
     <string name="event_card_label_2">Delete</string>

@@ -24,6 +24,8 @@
     <string name="nav_drawer_label_2">الإعدادات</string>
     <string name="nav_drawer_label_3">الأحداث السابقة</string>
     <string name="nav_drawer_label_4">عنا</string>
+    <string name="nav_drawer_label_5">خروج</string>
+
 
     // event card
     <string name="event_card_label_1">تعديل</string>
