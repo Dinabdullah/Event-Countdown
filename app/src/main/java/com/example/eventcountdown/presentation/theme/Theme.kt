@@ -43,16 +43,16 @@ private val DarkColorScheme = darkColorScheme(
     primary = Color(0xFF4FD8EB),
     secondary = Color(0xFFB1CBD0),
     tertiary = Color(0xFFBAC6EA),
-    background = Color(0xFF191C1D),
-    surface = Color(0xFF191C1D),
+    background = Color.Black,          // True black background
+    surface = Color.Black,             // True black surface
     onPrimary = Color(0xFF00363D),
-    onSecondary = Color(0xFF1E3438),
+    onSecondary = Color(0xFF01090A),
     onTertiary = Color(0xFF233044),
-    onBackground = Color(0xFFE1E3E3),
-    onSurface = Color(0xFFE1E3E3),
+    onBackground = Color(0xFFE1E3E3),  // Light text/items on black
+    onSurface = Color(0xFFE1E3E3),     // Light text/items on black
     error = Color(0xFFFFB4AB),
     primaryContainer = Color(0xFF004F58),
-    secondaryContainer = Color(0xFF334B50)
+    secondaryContainer = Color(0xFF15333A)
 )
 
 // تعريف Typography مخصص
