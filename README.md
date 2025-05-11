@@ -74,18 +74,19 @@ Event Countdown is an Android app that allows users to create, view, and manage 
 </p>
 <p>
   <img src="https://github.com/user-attachments/assets/0631c65e-5231-420d-96f1-9553e0b61bfe" alt="Image 1" width="20%" />
-  <img src="https://github.com/user-attachments/assets/209381ea-0afb-4a82-925f-b4681f6129d6" alt="Image 2" width="20%" />
+      <img src="https://github.com/user-attachments/assets/209381ea-0afb-4a82-925f-b4681f6129d6" alt="Image 2" width="20%" />
 </p>
 <p>
-  <img src="https://github.com/user-attachments/assets/a2556ee8-e033-4343-b71d-d3565bed928a" alt="Image 1" width="20%" />
   <img src="https://github.com/user-attachments/assets/d22da6af-1e9a-4e71-9475-25afcbd10261" alt="Image 2" width="20%" />
+      <img src="https://github.com/user-attachments/assets/ab614586-e190-4165-942b-fd69b968766e" alt="Image 1" width="20%" />
 </p>
 <p>
-  <img src="https://github.com/user-attachments/assets/ab614586-e190-4165-942b-fd69b968766e" alt="Image 1" width="20%" />
   <img src="https://github.com/user-attachments/assets/b159f09e-09f1-4e1a-935a-e428851a1f7c" alt="Image 2" width="20%" />
+      <img src="https://github.com/user-attachments/assets/94c050cd-b7b0-45a7-8484-0541c7d2dcc2" alt="Image 2" width="20%" />
 </p>
 <p>
-  <img src="https://github.com/user-attachments/assets/94c050cd-b7b0-45a7-8484-0541c7d2dcc2" alt="Image 2" width="20%" />
+      <img src="https://github.com/user-attachments/assets/ea6c4d89-1fe6-451e-98df-336e75a12d19" alt="Image 2" width="20%" />
+      <img src="https://github.com/user-attachments/assets/a2556ee8-e033-4343-b71d-d3565bed928a" alt="Image 1" width="20%" />
 </p>
 <p>
  <img src="https://github.com/user-attachments/assets/0e49ebf5-51dc-46a9-aefd-08f29fd41915" alt="Image 1" width="20%" />
