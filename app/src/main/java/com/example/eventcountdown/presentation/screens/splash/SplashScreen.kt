@@ -17,7 +17,6 @@ import androidx.compose.material.Text
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,37 +50,43 @@ fun SplashScreen(
     // Animation states
     var hourglassVisible by remember { mutableStateOf(false) }
     var textVisible by remember { mutableStateOf(false) }
+
+    // Splash display state
+    var splashDisplayed by remember { mutableStateOf(false) }
+
+    // ViewModel setup
     val viewModel: SplashViewModel = viewModel(factory = object : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return SplashViewModel(prefsHelper) as T
         }
     })
 
-    val isLoading by viewModel.isLoading.collectAsState()
-
-    LaunchedEffect(isLoading) {
-        if (!isLoading) {
-            when (authState) {
-                is AuthState.Authenticated -> {
-                    if (prefsHelper.onboardingCompleted) {
-                        onNavigate("home")
-                    } else {
-                        onNavigate("onboarding")
-                    }
-                }
-
-                else -> {
-                    onNavigate("login")
-                }
-            }
-        }
-    }
-
     // Animation controls
     LaunchedEffect(Unit) {
         hourglassVisible = true
-        delay(800)
+        delay(1500)
         textVisible = true
+    }
+
+    // Set splashDisplayed to true after a minimum delay
+    LaunchedEffect(Unit) {
+        delay(2000) // Minimum splash screen display time (2 seconds)
+        splashDisplayed = true
+    }
+
+    // Consolidated navigation logic
+    LaunchedEffect(splashDisplayed, authState) {
+        if (splashDisplayed && authState !is AuthState.Loading) {
+            if (!prefsHelper.onboardingCompleted) {
+                onNavigate("onboarding")
+            } else {
+                when (authState) {
+                    is AuthState.Authenticated -> onNavigate("home")
+                    is AuthState.Unauthenticated -> onNavigate("login")
+                    else -> onNavigate("login")
+                }
+            }
+        }
     }
 
     // Hourglass animation

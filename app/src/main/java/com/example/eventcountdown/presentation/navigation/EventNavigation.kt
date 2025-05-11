@@ -56,7 +56,7 @@ fun EventNavigation(
         composable("onboarding") {
             OnboardingPager(
                 onFinish = {
-                    navController.navigate("home") {
+                    navController.navigate("login") {
                         popUpTo("onboarding") { inclusive = true }
                     }
                 }
@@ -67,14 +67,8 @@ fun EventNavigation(
             LoginScreen(
                 onNavigateToSignUp = { navController.navigate("signup") },
                 onNavigateToMain = {
-                    if (prefsHelper.onboardingCompleted) {
-                        navController.navigate("home") {
-                            popUpTo("login") { inclusive = true }
-                        }
-                    } else {
-                        navController.navigate("onboarding") {
-                            popUpTo("login") { inclusive = true }
-                        }
+                    navController.navigate("home") {
+                        popUpTo("login") { inclusive = true }
                     }
                 },
                 onNavigateToForgotPassword = { navController.navigate("forgot_password") },
@@ -86,14 +80,8 @@ fun EventNavigation(
             SignupScreen(
                 onNavigateToLogin = { navController.navigate("login") },
                 onNavigateToMain = {
-                    if (prefsHelper.onboardingCompleted) {
-                        navController.navigate("home") {
-                            popUpTo("signup") { inclusive = true }
-                        }
-                    } else {
-                        navController.navigate("onboarding") {
-                            popUpTo("signup") { inclusive = true }
-                        }
+                    navController.navigate("home") {
+                        popUpTo("signup") { inclusive = true }
                     }
                 },
                 viewModel = authViewModel
