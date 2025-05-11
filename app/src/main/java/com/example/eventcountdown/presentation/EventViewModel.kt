@@ -1,4 +1,4 @@
-package com.example.eventcountdown.presentation.activity
+package com.example.eventcountdown.presentation
 
 import android.app.Application
 import android.util.Log
@@ -8,7 +8,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager

@@ -8,12 +8,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.eventcountdown.presentation.activity.EventViewModel
+import com.example.eventcountdown.presentation.EventViewModel
 import com.example.eventcountdown.presentation.auth.AuthViewModel
 import com.example.eventcountdown.presentation.auth.ForgotPasswordScreen
 import com.example.eventcountdown.presentation.auth.LoginScreen
 import com.example.eventcountdown.presentation.auth.SignupScreen
-import com.example.eventcountdown.presentation.screens.PastEventsScreen
+import com.example.eventcountdown.presentation.screens.pastevent.PastEventsScreen
 import com.example.eventcountdown.presentation.screens.about.AboutScreen
 import com.example.eventcountdown.presentation.screens.addevent.AddEventScreen
 import com.example.eventcountdown.presentation.screens.countdown.CountdownScreen

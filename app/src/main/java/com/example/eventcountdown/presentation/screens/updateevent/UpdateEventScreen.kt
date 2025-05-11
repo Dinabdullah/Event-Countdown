@@ -40,7 +40,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.eventcountdown.R
-import com.example.eventcountdown.presentation.activity.EventViewModel
+import com.example.eventcountdown.presentation.EventViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date

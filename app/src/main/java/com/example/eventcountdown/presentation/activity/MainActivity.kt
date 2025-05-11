@@ -23,12 +23,12 @@ import androidx.work.WorkManager
 import com.example.eventcountdown.data.local.AppDatabase
 import com.example.eventcountdown.data.remote.api.RetrofitClient
 import com.example.eventcountdown.data.repository.HolidayRepository
+import com.example.eventcountdown.presentation.EventViewModel
 import com.example.eventcountdown.presentation.auth.AuthViewModel
 import com.example.eventcountdown.presentation.navigation.EventNavigation
 import com.example.eventcountdown.presentation.theme.AppSettingsViewModel
 import com.example.eventcountdown.presentation.theme.EventCountdownTheme
 import com.example.eventcountdown.presentation.theme.SettingsRepository
-import com.example.eventcountdown.presentation.theme.ThemePreference
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
 import java.util.Locale

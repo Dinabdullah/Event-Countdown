@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.eventcountdown.R
-import com.example.eventcountdown.presentation.activity.EventViewModel
+import com.example.eventcountdown.presentation.EventViewModel
 import com.example.eventcountdown.presentation.componants.CombinedEventList
 import com.example.eventcountdown.presentation.componants.EmptyStateView
 import kotlinx.coroutines.delay

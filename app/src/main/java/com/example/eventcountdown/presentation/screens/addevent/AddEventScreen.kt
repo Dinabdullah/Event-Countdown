@@ -32,7 +32,7 @@ import androidx.navigation.NavController
 import androidx.wear.compose.material.ContentAlpha
 import coil.compose.rememberAsyncImagePainter
 import com.example.eventcountdown.data.local.Event
-import com.example.eventcountdown.presentation.activity.EventViewModel
+import com.example.eventcountdown.presentation.EventViewModel
 import java.util.*
 import android.net.Uri
 import androidx.compose.ui.res.stringResource

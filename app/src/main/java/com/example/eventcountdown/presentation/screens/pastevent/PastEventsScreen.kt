@@ -1,4 +1,4 @@
-package com.example.eventcountdown.presentation.screens
+package com.example.eventcountdown.presentation.screens.pastevent
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -24,7 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.eventcountdown.R
-import com.example.eventcountdown.presentation.activity.EventViewModel
+import com.example.eventcountdown.presentation.EventViewModel
 import com.example.eventcountdown.presentation.componants.PastEventsList
 import kotlinx.coroutines.delay
 
