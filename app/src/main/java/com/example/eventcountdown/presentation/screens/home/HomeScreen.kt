@@ -125,6 +125,21 @@ fun HomeScreen(
                         },
                         modifier = Modifier.padding(vertical = 8.dp)
                     )
+                    NavigationDrawerItem(
+                        label = { Text(text = "Sign Out") },
+                        icon = {
+                            Icon(
+                                painter = painterResource(id = R.drawable.baseline_logout_24), // Replace with your sign-out icon resource
+                                contentDescription = null
+                            )
+                        },
+                        selected = false,
+                        onClick = {
+                            scope.launch { drawerState.close() }
+                            onSignOut()
+                        },
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
                 }
             }
         }
